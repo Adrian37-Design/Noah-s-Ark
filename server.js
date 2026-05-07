@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const bodyParser = require('body-parser');
+const serverless = require('serverless-http');
 const admin = require('firebase-admin');
 
 const app = express();
@@ -277,4 +278,5 @@ app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
 
-module.exports = app;
+// Wrap with serverless-http for Vercel body parsing compatibility
+module.exports = serverless(app);
