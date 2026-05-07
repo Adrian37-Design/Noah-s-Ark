@@ -280,3 +280,6 @@ app.use((req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+
+// Required for Vercel serverless deployment
+module.exports = app;
