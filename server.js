@@ -32,7 +32,31 @@ const db = admin.firestore();
 app.use(cors());
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
+
+// Fallback: manually parse body if body-parser didn't catch it
+app.use((req, res, next) => {
+  if (req.body !== undefined) return next();
+  const chunks = [];
+  req.on('data', c => chunks.push(c));
+  req.on('end', () => {
+    try { req.body = JSON.parse(Buffer.concat(chunks).toString()); }
+    catch (e) { req.body = {}; }
+    next();
+  });
+});
+
 app.use(express.static(__dirname));
+
+// DEBUG endpoint — remove after fixing
+app.all('/api/debug', (req, res) => {
+  res.json({
+    method: req.method,
+    body: req.body,
+    bodyType: typeof req.body,
+    contentType: req.headers['content-type'] || 'none'
+  });
+});
+
 
 // ========================
 // HELPERS
