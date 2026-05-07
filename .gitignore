@@ -1,0 +1,14 @@
+node_modules/
+.DS_Store
+*.log
+*.env
+
+# Large media files
+community-prayer.png
+community-youth.png
+IMG-20260426-WA0005.jpg
+Screenshot*.png
+
+# Firebase - NEVER commit these
+serviceAccountKey.json
+seed-firestore.js

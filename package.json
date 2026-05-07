@@ -1,10 +1,11 @@
 {
-  "name": "noah's-ark",
+  "name": "noahs-ark",
   "version": "1.0.0",
-  "description": "",
-  "main": "animations.js",
+  "description": "Noah's Ark Anglican Church Fairview website",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "dev": "node server.js"
   },
   "keywords": [],
   "author": "",
@@ -12,6 +13,7 @@
   "dependencies": {
     "body-parser": "^2.2.2",
     "cors": "^2.8.6",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "firebase-admin": "^13.8.0"
   }
 }
