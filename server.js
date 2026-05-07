@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const bodyParser = require('body-parser');
 const admin = require('firebase-admin');
 
 const app = express();
@@ -29,7 +30,8 @@ const db = admin.firestore();
 // MIDDLEWARE
 // ========================
 app.use(cors());
-app.use(express.json({ limit: '10mb' }));
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 app.use(express.static(__dirname));
 
 // ========================
