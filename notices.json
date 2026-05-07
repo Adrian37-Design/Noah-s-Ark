@@ -1,0 +1,14 @@
+[
+  {
+    "id": "1",
+    "icon": "fas fa-bell",
+    "title": "Stewardship Reminder",
+    "description": "Please remember to submit your pledge cards to the churchwardens. Your faithful giving sustains our ministries and outreach work."
+  },
+  {
+    "id": "3",
+    "icon": "fas fa-praying-hands",
+    "title": "Prayer Chain",
+    "description": "Submit prayer requests to the prayer chain team by contacting any churchwarden. All requests are kept in strict confidence."
+  }
+]

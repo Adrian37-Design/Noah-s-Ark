@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Find Us | Noah's Ark Fairview</title>
+  <link rel="icon" href="logo_new.png">
+  <meta name="description"
+    content="Find Noah's Ark Anglican Church in Fairview, Harare. Get automatic directions from your current location.">
+  <meta name="keywords" content="Noah's Ark Location, Fairview Church Harare, Anglican Church Directions Zimbabwe">
+  <meta property="og:title" content="Find Us | Noah's Ark Fairview">
+  <meta property="og:description" content="Auto-directions from your location to our church.">
+  <meta property="og:image" content="logo_new.png">
+
+  <!-- Fonts & Icons -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Leaflet Routing Machine -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css">
+  <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+
+  <link rel="stylesheet" href="global.css">
+  <script src="components.js" defer></script>
+  <script src="animations.js" defer></script>
+
+  <style>
+    /* ────────────────────────────────────────
+     COMPACT PREVIEW MAP (on the page)
+  ──────────────────────────────────────── */
+    #map-preview-wrap {
+      width: 100%;
+      height: 340px;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: var(--shadow-deep);
+      border: 1px solid rgba(196, 18, 48, 0.25);
+      margin-bottom: 2rem;
+      position: relative;
+      background: var(--navy-dark);
+    }
+
+    #map-preview {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Preview loading spinner */
+    #preview-overlay {
+      position: absolute;
+      inset: 0;
+      background: var(--navy-dark);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.8rem;
+      z-index: 50;
+      border-radius: 20px;
+      transition: opacity 0.5s ease;
+    }
+
+    #preview-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 3px solid rgba(196, 18, 48, 0.2);
+      border-top-color: var(--gold);
+      animation: spin 0.8s linear infinite;
+    }
+
+    #preview-overlay p {
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* ────────────────────────────────────────
+     GET DIRECTIONS BUTTON (compact card)
+  ──────────────────────────────────────── */
+    #btn-get-directions {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 1rem 2rem;
+      border-radius: 50px;
+      background: var(--gold);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      margin-top: 1.4rem;
+      transition: all 0.3s ease;
+      width: 100%;
+      justify-content: center;
+    }
+
+    #btn-get-directions:hover {
+      background: var(--gold-light);
+      box-shadow: 0 0 30px rgba(196, 18, 48, 0.5), 0 8px 24px rgba(0, 0, 0, 0.2);
+      transform: translateY(-2px);
+    }
+
+    /* ────────────────────────────────────────
+     FULLSCREEN NAVIGATION MODAL
+  ──────────────────────────────────────── */
+    #nav-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      background: var(--navy-dark);
+      transform: translateY(100%);
+      transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+      will-change: transform;
+    }
+
+    #nav-modal.open {
+      transform: translateY(0);
+    }
+
+    /* ── Modal header bar ── */
+    #nav-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.2rem;
+      height: 64px;
+      flex-shrink: 0;
+      background: rgba(6, 15, 34, 0.95);
+      border-bottom: 1px solid rgba(196, 18, 48, 0.25);
+      backdrop-filter: blur(16px);
+      gap: 1rem;
+    }
+
+    #nav-back {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: rgba(255, 255, 255, 0.75);
+      font-family: var(--font-body);
+      font-size: 0.84rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      padding: 8px 14px;
+      border-radius: 50px;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    #nav-back:hover {
+      color: var(--white);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    /* Church destination pill */
+    #nav-dest {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-heading);
+      font-size: 0.95rem;
+      color: var(--white);
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      flex: 1;
+    }
+
+    #nav-dest i {
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+
+    /* ── Mode selector toggles ── */
+    #mode-selector {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .mode-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 7px 16px;
+      border-radius: 50px;
+      border: 1.5px solid rgba(255, 255, 255, 0.15);
+      background: transparent;
+      color: rgba(255, 255, 255, 0.55);
+      font-family: var(--font-body);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .mode-btn.active {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: var(--white);
+      box-shadow: 0 0 16px rgba(196, 18, 48, 0.4);
+    }
+
+    .mode-btn:not(.active):hover {
+      border-color: rgba(255, 255, 255, 0.4);
+      color: var(--white);
+    }
+
+    /* ── Full navigation map ── */
+    #nav-map {
+      flex: 1;
+      display: block;
+      z-index: 1;
+      min-height: 0;
+      /* important for flex overflow */
+    }
+
+    /* ── Bottom action panel ── */
+    #nav-footer {
+      flex-shrink: 0;
+      padding: 14px 1.4rem 20px;
+      background: rgba(6, 15, 34, 0.97);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid rgba(196, 18, 48, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    #nav-summary {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 150px;
+    }
+
+    #nav-summary .summary-main {
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1;
+    }
+
+    #nav-summary .summary-sub {
+      font-family: var(--font-body);
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.5);
+      letter-spacing: 0.05em;
+    }
+
+    #nav-summary .summary-placeholder {
+      font-family: var(--font-quote);
+      font-style: italic;
+      font-size: 0.88rem;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    /* Start button */
+    #nav-start-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 1rem 2.2rem;
+      border-radius: 50px;
+      background: var(--gold);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #nav-start-btn:hover:not(:disabled) {
+      background: var(--gold-light);
+      box-shadow: 0 0 30px rgba(196, 18, 48, 0.5), 0 8px 24px rgba(0, 0, 0, 0.25);
+      transform: translateY(-2px);
+    }
+
+    #nav-start-btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    #nav-start-btn .btn-spinner {
+      display: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      animation: spin 0.7s linear infinite;
+    }
+
+    #nav-start-btn.loading .btn-text {
+      display: none;
+    }
+
+    #nav-start-btn.loading .btn-spinner {
+      display: block;
+    }
+
+    /* ── Error bar ── */
+    #nav-error {
+      display: none;
+      position: absolute;
+      top: 76px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 600;
+      background: rgba(139, 0, 24, 0.92);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(196, 18, 48, 0.5);
+      border-radius: 12px;
+      padding: 10px 18px;
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      color: #fff;
+      white-space: nowrap;
+      max-width: 90vw;
+      text-align: center;
+    }
+
+    #nav-error.visible {
+      display: block;
+      animation: fadeSlideDown 0.3s ease;
+    }
+
+    @keyframes fadeSlideDown {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+
+    /* ── Route status pill (inside nav map) ── */
+    #route-status {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 500;
+      display: none;
+      background: rgba(6, 15, 34, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(196, 18, 48, 0.4);
+      border-radius: 50px;
+      padding: 7px 18px;
+      gap: 8px;
+      align-items: center;
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.85);
+      white-space: nowrap;
+    }
+
+    #route-status.visible {
+      display: flex;
+    }
+
+    #route-status .sdot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--gold);
+      animation: pulse-dot 1.5s ease infinite;
+    }
+
+    @keyframes pulse-dot {
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 1
+      }
+
+      50% {
+        transform: scale(1.6);
+        opacity: 0.5
+      }
+    }
+
+    /* ── Routing panel custom theme ── */
+    .leaflet-routing-container {
+      background: rgba(6, 15, 34, 0.93) !important;
+      backdrop-filter: blur(16px) !important;
+      color: rgba(255, 255, 255, 0.8) !important;
+      border: 1px solid rgba(196, 18, 48, 0.3) !important;
+      border-radius: 14px !important;
+      font-family: var(--font-body) !important;
+      font-size: 0.8rem !important;
+      max-height: 40vh !important;
+      box-shadow: var(--shadow-deep) !important;
+      overflow-y: auto;
+    }
+
+    .leaflet-routing-container h2,
+    .leaflet-routing-container h3 {
+      font-family: var(--font-heading) !important;
+      color: var(--white) !important;
+      font-size: 0.95rem !important;
+    }
+
+    .leaflet-routing-alt {
+      background: transparent !important;
+      border-top: 1px solid rgba(196, 18, 48, 0.15) !important;
+    }
+
+    .leaflet-routing-alt tr:hover {
+      background: rgba(196, 18, 48, 0.08) !important;
+    }
+
+    .leaflet-routing-alt td {
+      color: rgba(255, 255, 255, 0.7) !important;
+      padding: 5px 10px;
+    }
+
+    /* Custom markers */
+    .church-pin {
+      width: 42px;
+      height: 42px;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      background: var(--gold);
+      border: 3px solid white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 18px rgba(196, 18, 48, 0.5);
+    }
+
+    .church-pin i {
+      transform: rotate(45deg);
+      color: white;
+      font-size: 1rem;
+    }
+
+    .user-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #4A90E2;
+      border: 3px solid white;
+      box-shadow: 0 0 0 6px rgba(74, 144, 226, 0.2);
+      animation: user-pulse 2s ease infinite;
+    }
+
+    @keyframes user-pulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 6px rgba(74, 144, 226, 0.2)
+      }
+
+      50% {
+        box-shadow: 0 0 0 14px rgba(74, 144, 226, 0.05)
+      }
+    }
+
+    @media (max-width: 600px) {
+      .mode-btn span {
+        display: none;
+      }
+
+      #nav-dest {
+        font-size: 0.82rem;
+      }
+
+      #nav-start-btn {
+        padding: 0.9rem 1.6rem;
+        font-size: 0.82rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="navbar"></div>
+
+  <div class="page-hero">
+    <h1 class="reveal">Find Us</h1>
+    <p class="reveal reveal-delay-1">Our doors are open every Sunday. Let us guide you here.</p>
+  </div>
+
+  <main class="page-content">
+    <div class="grid-2" style="align-items: start; gap: 3rem;">
+
+      <!-- ═══ LEFT: Preview Map + Button ═══ -->
+      <div class="reveal-left">
+
+        <div id="map-preview-wrap">
+          <div id="preview-overlay">
+            <div class="spinner"></div>
+            <p>Loading church location…</p>
+          </div>
+          <div id="map-preview"></div>
+        </div>
+
+        <div class="card gold-top">
+          <h3><i class="fas fa-map-marker-alt" style="color:var(--gold); margin-right:0.6rem;"></i> Our Address</h3>
+          <p style="margin-top:0.6rem; font-size:1rem; line-height:2.1;">
+            <strong>Noah's Ark Anglican Church</strong><br>
+            Stands No. 687, 688, 689 Fairview, Harare<br>
+            Zimbabwe
+          </p>
+          <button id="btn-get-directions" aria-label="Get directions from my current location">
+            <i class="fas fa-location-arrow"></i>
+            Get Directions from My Location
+          </button>
+        </div>
+
+      </div>
+
+      <!-- ═══ RIGHT: Contact + Times ═══ -->
+      <div class="reveal-right">
+
+        <div class="sec-head">
+          <span class="sec-label">Contact</span>
+          <h2 class="sec-title" style="font-size:clamp(1.5rem,3vw,2.2rem);">Get in Touch</h2>
+          <div class="sec-divider"></div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:1rem; margin-top:1.8rem; margin-bottom:2.5rem;">
+          <div class="card">
+            <h3><i class="fas fa-phone" style="color:var(--gold); margin-right:0.6rem;"></i> Phone</h3>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.2rem;">
+              <a href="tel:+263772448933" style="color:var(--blue); font-size:1rem;">+263 772 448 933</a>
+              <a href="tel:0242300686" style="color:var(--blue); font-size:1rem;">0242 300 686</a>
+            </div>
+          </div>
+          <div class="card">
+            <h3><i class="fas fa-envelope" style="color:var(--gold); margin-right:0.6rem;"></i> Email</h3>
+            <p><a href="mailto:spmarlb.anglican@gmail.com"
+                style="color:var(--blue); font-size:1rem;">spmarlb.anglican@gmail.com</a></p>
+          </div>
+          <div class="card">
+            <h3><i class="fab fa-facebook" style="color:var(--gold); margin-right:0.6rem;"></i> Facebook</h3>
+            <p><a href="https://www.facebook.com/profile.php?id=61556801708456" target="_blank" rel="noopener"
+                style="color:var(--blue);">Follow us on
+                Facebook</a></p>
+          </div>
+        </div>
+
+        <div class="sec-head">
+          <span class="sec-label">This Sunday</span>
+          <h2 class="sec-title" style="font-size:clamp(1.5rem,3vw,2.2rem);">Service Time</h2>
+          <div class="sec-divider"></div>
+        </div>
+
+        <table class="sched-table" style="margin-top: 1.2rem;">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Service</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>9:00 AM</td>
+              <td>Holy Eucharist — Choir &amp; Shona</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="alert-box" style="margin-top: 2rem;">
+          <h4><i class="fas fa-info-circle" style="margin-right:0.5rem;"></i> Parking &amp; Access</h4>
+          <p>Ample parking available on the church grounds. Wheelchair access via side entrance. Nursery facilities
+            available for infants.</p>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════════
+       FULLSCREEN NAVIGATION MODAL
+  ════════════════════════════════════════════════════════════ -->
+  <div id="nav-modal" role="dialog" aria-modal="true" aria-label="Navigation to Noah's Ark">
+
+    <!-- Header bar -->
+    <div id="nav-header">
+      <button id="nav-back" aria-label="Close navigation">
+        <i class="fas fa-arrow-left"></i> <span>Back</span>
+      </button>
+
+      <div id="nav-dest">
+        <i class="fas fa-church"></i>
+        Noah's Ark Anglican Church
+      </div>
+
+      <!-- Walk / Vehicle mode selector -->
+      <div id="mode-selector" role="group" aria-label="Travel mode">
+        <button class="mode-btn active" data-mode="driving" aria-pressed="true">
+          <i class="fas fa-car"></i> <span>Vehicle</span>
+        </button>
+        <button class="mode-btn" data-mode="foot" aria-pressed="false">
+          <i class="fas fa-person-walking"></i> <span>Walk</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Error bar -->
+    <div id="nav-error"></div>
+
+    <!-- Route status pill (inside map) -->
+    <div style="position:relative; flex:1; display:flex; flex-direction:column; min-height:0;">
+      <div id="route-status">
+        <div class="sdot"></div>
+        <span id="route-status-text">Calculating route…</span>
+      </div>
+
+      <!-- The full navigation map -->
+      <div id="nav-map"></div>
+    </div>
+
+    <!-- Footer: summary + Start button -->
+    <div id="nav-footer">
+      <div id="nav-summary">
+        <span class="summary-placeholder">Select a travel mode and press Start</span>
+      </div>
+      <button id="nav-start-btn">
+        <i class="fas fa-play btn-text"></i>
+        <span class="btn-text">&nbsp; Start Navigation</span>
+        <div class="btn-spinner"></div>
+      </button>
+    </div>
+
+  </div>
+
+  <div id="footer"></div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       MAP & NAVIGATION LOGIC
+  ════════════════════════════════════════════════════════════ -->
+  <script>
+    (function () {
+
+      /* ── Church exact location ── */
+      const CHURCH = { lat: -17.715907902679383, lng: 30.929155353025017 };
+      const CHURCH_NAME = "Noah's Ark Anglican Church";
+
+      /* ── State ── */
+      let previewMap, navMap, routingControl, userMarker;
+      let selectedMode = 'driving'; // 'driving' | 'foot'
+      let navMapReady = false;
+
+      /* ── DOM refs ── */
+      const modal = document.getElementById('nav-modal');
+      const btnOpen = document.getElementById('btn-get-directions');
+      const btnBack = document.getElementById('nav-back');
+      const btnStart = document.getElementById('nav-start-btn');
+      const modeBtns = document.querySelectorAll('.mode-btn');
+      const navErrorEl = document.getElementById('nav-error');
+      const routeStatus = document.getElementById('route-status');
+      const routeStatusTxt = document.getElementById('route-status-text');
+      const previewOverlay = document.getElementById('preview-overlay');
+      const summaryEl = document.getElementById('nav-summary');
+
+      /* ─────────────────────────────────────────────
+         Shared icon factory
+      ──────────────────────────────────────────────*/
+      function churchIcon() {
+        return L.divIcon({
+          className: '',
+          html: '<div class="church-pin"><i class="fas fa-church"></i></div>',
+          iconSize: [42, 42], iconAnchor: [21, 42], popupAnchor: [0, -46],
+        });
+      }
+      function userIcon() {
+        return L.divIcon({
+          className: '', html: '<div class="user-dot"></div>',
+          iconSize: [18, 18], iconAnchor: [9, 9],
+        });
+      }
+
+      /* ─────────────────────────────────────────────
+         1. PREVIEW MAP  (small, page-level, static)
+      ──────────────────────────────────────────────*/
+      function initPreviewMap() {
+        previewMap = L.map('map-preview', {
+          center: [CHURCH.lat, CHURCH.lng], zoom: 15,
+          zoomControl: false, attributionControl: true,
+          dragging: false, scrollWheelZoom: false, doubleClickZoom: false,
+        });
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>',
+          subdomains: 'abcd', maxZoom: 19,
+        }).addTo(previewMap);
+
+        L.marker([CHURCH.lat, CHURCH.lng], { icon: churchIcon() })
+          .addTo(previewMap)
+          .bindPopup(`<b style="color:#C41230;font-family:'Playfair Display',serif;">${CHURCH_NAME}</b><br><small style="color:rgba(255,255,255,0.6)">Fairview, Harare</small>`);
+
+        previewMap.once('load', () => previewOverlay.classList.add('hidden'));
+        setTimeout(() => previewOverlay.classList.add('hidden'), 2000);
+      }
+
+      /* ─────────────────────────────────────────────
+         2. NAVIGATION MAP  (fullscreen modal)
+      ──────────────────────────────────────────────*/
+      function initNavMap() {
+        if (navMapReady) return;
+        navMapReady = true;
+
+        navMap = L.map('nav-map', {
+          center: [CHURCH.lat, CHURCH.lng], zoom: 14,
+          zoomControl: true, attributionControl: true,
+        });
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+          attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+          subdomains: 'abcd', maxZoom: 19,
+        }).addTo(navMap);
+
+        L.marker([CHURCH.lat, CHURCH.lng], { icon: churchIcon() })
+          .addTo(navMap)
+          .bindPopup(`<b style="color:#C41230;font-family:'Playfair Display',serif;">${CHURCH_NAME}</b>`)
+          .openPopup();
+      }
+
+      /* ─────────────────────────────────────────────
+         3. OPEN / CLOSE MODAL
+      ──────────────────────────────────────────────*/
+      function openModal() {
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+
+        // Init nav map after slide-up animation
+        // Kick invalidateSize at 3 intervals to guarantee tile render
+        setTimeout(() => { initNavMap(); }, 50);
+        setTimeout(() => { if (navMap) navMap.invalidateSize(); }, 480);
+        setTimeout(() => { if (navMap) navMap.invalidateSize(); }, 700);
+        setTimeout(() => { if (navMap) { navMap.invalidateSize(); navMap.setView([CHURCH.lat, CHURCH.lng], 14); } }, 950);
+      }
+
+      function closeModal() {
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
+        hideError();
+        routeStatus.classList.remove('visible');
+      }
+
+      btnOpen.addEventListener('click', openModal);
+      btnBack.addEventListener('click', closeModal);
+
+      /* ESC key closes modal */
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+      });
+
+      /* ─────────────────────────────────────────────
+         4. MODE SELECTOR
+      ──────────────────────────────────────────────*/
+      modeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          selectedMode = btn.dataset.mode;
+          modeBtns.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
+          btn.classList.add('active');
+          btn.setAttribute('aria-pressed', 'true');
+
+          // If a route already showing, recalculate
+          if (userMarker) startNavigation();
+        });
+      });
+
+      /* ─────────────────────────────────────────────
+         5. START NAVIGATION (Geoloc → Route)
+      ──────────────────────────────────────────────*/
+      btnStart.addEventListener('click', startNavigation);
+
+      function startNavigation() {
+        hideError();
+        btnStart.classList.add('loading');
+        btnStart.disabled = true;
+        routeStatus.classList.remove('visible');
+        summaryEl.innerHTML = '<span class="summary-placeholder">Getting your location…</span>';
+
+        if (!navigator.geolocation) {
+          showError('Your browser does not support location access.');
+          resetBtn();
+          return;
+        }
+
+        navigator.geolocation.getCurrentPosition(onGeoSuccess, onGeoError, {
+          enableHighAccuracy: true, timeout: 15000, maximumAge: 0,
+        });
+      }
+
+      function onGeoSuccess(pos) {
+        const uLat = pos.coords.latitude;
+        const uLng = pos.coords.longitude;
+        resetBtn();
+
+        /* Place / move user marker */
+        if (userMarker) navMap.removeLayer(userMarker);
+        userMarker = L.marker([uLat, uLng], { icon: userIcon() })
+          .addTo(navMap)
+          .bindPopup('<span style="font-family:Inter,sans-serif;font-size:0.82rem;color:#fff;">📍 Your Location</span>');
+
+        /* Show calculating status */
+        routeStatusTxt.textContent = selectedMode === 'driving'
+          ? '🚗  Calculating driving route…'
+          : '🚶  Calculating walking route…';
+        routeStatus.classList.add('visible');
+
+        /* Remove old route */
+        if (routingControl) navMap.removeControl(routingControl);
+
+        /* Build route */
+        routingControl = L.Routing.control({
+          waypoints: [
+            L.latLng(uLat, uLng),
+            L.latLng(CHURCH.lat, CHURCH.lng),
+          ],
+          router: L.Routing.osrmv1({
+            serviceUrl: 'https://router.project-osrm.org/route/v1',
+            profile: selectedMode,
+          }),
+          routeWhileDragging: false,
+          addWaypoints: false,
+          draggableWaypoints: false,
+          fitSelectedRoutes: true,
+          show: true,
+          collapsible: true,
+          showAlternatives: false,
+          lineOptions: {
+            styles: [
+              { color: selectedMode === 'driving' ? '#C41230' : '#4A90E2', opacity: 0.95, weight: 6 },
+              { color: selectedMode === 'driving' ? '#E8445A' : '#7BB3F0', opacity: 0.35, weight: 12 },
+            ],
+            extendToWaypoints: true, missingRouteTolerance: 0,
+          },
+          createMarker: () => null, // use our own markers
+        }).addTo(navMap);
+
+        routingControl.on('routesfound', (e) => {
+          const r = e.routes[0];
+          const km = (r.summary.totalDistance / 1000).toFixed(1);
+          const mins = Math.ceil(r.summary.totalTime / 60);
+          const icon = selectedMode === 'driving' ? '🚗' : '🚶';
+          routeStatusTxt.textContent = `${icon}  ${km} km · ~${mins} min`;
+          summaryEl.innerHTML = `
+          <span class="summary-main">${km} km &nbsp;&middot;&nbsp; ~${mins} min</span>
+          <span class="summary-sub">${selectedMode === 'driving' ? 'Driving to Noah\'s Ark' : 'Walking to Noah\'s Ark'}</span>`;
+        });
+
+        routingControl.on('routingerror', () => {
+          routeStatusTxt.textContent = '⚠ Route unavailable. Check your connection.';
+          showError('Could not calculate a route. Please check your internet connection.');
+        });
+      }
+
+      function onGeoError(err) {
+        resetBtn();
+        const msgs = {
+          1: 'Location permission denied. Enable location in your browser settings.',
+          2: 'Location currently unavailable. Please try again.',
+          3: 'Location request timed out. Please try again.',
+        };
+        showError(msgs[err.code] || 'Unable to obtain your location.');
+      }
+
+      function resetBtn() {
+        btnStart.classList.remove('loading');
+        btnStart.disabled = false;
+      }
+
+      /* ─────────────────────────────────────────────
+         6. ERROR BAR
+      ──────────────────────────────────────────────*/
+      function showError(msg) {
+        navErrorEl.textContent = '⚠ ' + msg;
+        navErrorEl.classList.add('visible');
+        setTimeout(hideError, 6000);
+      }
+      function hideError() { navErrorEl.classList.remove('visible'); }
+
+      /* ─────────────────────────────────────────────
+         BOOT — Preview map on load
+      ──────────────────────────────────────────────*/
+      window.addEventListener('load', initPreviewMap);
+
+    })();
+  </script>
+
+</body>
+
+</html>

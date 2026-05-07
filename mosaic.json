@@ -1,0 +1,42 @@
+[
+  {
+    "id": "1",
+    "label": "Moments of Prayer",
+    "imageSrc": "IMG-20260426-WA0005.jpg",
+    "bgClass": "",
+    "tall": true,
+    "iconSvg": ""
+  },
+  {
+    "id": "2",
+    "label": "Sunday School",
+    "imageSrc": "community-youth.png",
+    "bgClass": "",
+    "tall": false,
+    "iconSvg": ""
+  },
+  {
+    "id": "3",
+    "label": "Choir Ministry",
+    "imageSrc": "",
+    "bgClass": "mosaic-bg-2",
+    "tall": false,
+    "iconSvg": "<svg viewBox='0 0 24 24' aria-hidden='true'><path d='M9 18V5l12-2v13'/><circle cx='6' cy='18' r='3'/><circle cx='18' cy='16' r='3'/></svg>"
+  },
+  {
+    "id": "4",
+    "label": "Outreach",
+    "imageSrc": "",
+    "bgClass": "mosaic-bg-3",
+    "tall": false,
+    "iconSvg": "<svg viewBox='0 0 24 24' aria-hidden='true'><path d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z'/></svg>"
+  },
+  {
+    "id": "5",
+    "label": "Fellowship",
+    "imageSrc": "",
+    "bgClass": "mosaic-bg-4",
+    "tall": false,
+    "iconSvg": "<svg viewBox='0 0 24 24' aria-hidden='true'><path d='M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2'/><circle cx='9' cy='7' r='4'/><path d='M23 21v-2a4 4 0 0 0-3-3.87'/><path d='M16 3.13a4 4 0 0 1 0 7.75'/></svg>"
+  }
+]

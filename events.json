@@ -1,0 +1,37 @@
+[
+  {
+    "id": "2",
+    "category": "youth",
+    "date": "2026-05-11",
+    "title": "Youth Fellowship Meeting",
+    "description": "Monthly gathering for all young adults in the parish. This month's topic: Faith in the workplace."
+  },
+  {
+    "id": "3",
+    "category": "outreach",
+    "date": "2026-05-18",
+    "title": "Community Outreach Day",
+    "description": "Join us as we distribute food parcels and prayer to families in need across Fairview."
+  },
+  {
+    "id": "4",
+    "category": "women",
+    "date": "2026-05-25",
+    "title": "Women's Fellowship Luncheon",
+    "description": "An afternoon of fellowship, inspiration, and food for the women of our parish community."
+  },
+  {
+    "id": "5",
+    "category": "worship",
+    "date": "2026-06-01",
+    "title": "Pentecost Sunday",
+    "description": "A major celebration of the Holy Spirit. Special choir performance and festive Holy Eucharist."
+  },
+  {
+    "id": "6",
+    "category": "notice",
+    "date": "2026-06-08",
+    "title": "Annual General Meeting",
+    "description": "All parish members are invited to the AGM to review the year and plan for the future of our church."
+  }
+]

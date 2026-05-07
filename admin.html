@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | Noah's Ark Fairview</title>
+  <link rel="icon" href="logo_new.png">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="global.css">
+  <style>
+    body { background: var(--navy-dark); color: var(--white); min-height: 100vh; padding-top: 60px; font-family: var(--font-body); }
+
+    /* Golden Bubbles */
+    .bubbles { position:absolute; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; overflow:hidden; }
+    .bubbles span { position:absolute; bottom:-50px; width:20px; height:20px; background:rgba(212,175,55,0.18); border-radius:50%; animation:bubble 14s infinite ease-in; }
+    .bubbles span:nth-child(1) { left:5%; width:40px; height:40px; animation-duration:11s; animation-delay:0s; }
+    .bubbles span:nth-child(2) { left:15%; width:25px; height:25px; animation-duration:15s; animation-delay:1s; }
+    .bubbles span:nth-child(3) { left:25%; width:50px; height:50px; animation-duration:10s; animation-delay:2s; }
+    .bubbles span:nth-child(4) { left:35%; width:15px; height:15px; animation-duration:17s; animation-delay:0.5s; }
+    .bubbles span:nth-child(5) { left:45%; width:35px; height:35px; animation-duration:12s; animation-delay:3s; }
+    .bubbles span:nth-child(6) { left:55%; width:20px; height:20px; animation-duration:14s; animation-delay:1.5s; }
+    .bubbles span:nth-child(7) { left:65%; width:45px; height:45px; animation-duration:11s; animation-delay:4s; }
+    .bubbles span:nth-child(8) { left:75%; width:30px; height:30px; animation-duration:16s; animation-delay:2.5s; }
+    .bubbles span:nth-child(9) { left:85%; width:18px; height:18px; animation-duration:13s; animation-delay:0.8s; }
+    .bubbles span:nth-child(10) { left:95%; width:40px; height:40px; animation-duration:10s; animation-delay:3.5s; }
+    @keyframes bubble {
+      0% { transform:translateY(0) translateX(0); opacity:0.5; }
+      50% { opacity:0.2; }
+      100% { transform:translateY(-120vh) translateX(-50px); opacity:0; }
+    }
+    
+    /* Login Screen */
+    #login-screen {
+      position: fixed; inset: 0; background: var(--navy-dark); z-index: 9999;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .login-box {
+      background: rgba(6,15,34,0.95); padding: 3rem 2.5rem; text-align: center;
+      border-radius: 20px; border: 1px solid rgba(196,18,48,0.3);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5); max-width: 400px; width: 90%;
+    }
+    .login-box img { height: 60px; margin-bottom: 1.5rem; }
+    .input-group { margin-bottom: 1.5rem; text-align: left; position: relative; }
+    .input-group label { display: block; font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-bottom: 0.5rem; }
+    .input-group input, .input-group select, .input-group textarea {
+      width: 100%; padding: 0.9rem; background: rgba(0,0,0,0.2); 
+      border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff;
+      font-family: inherit; font-size: 1rem;
+    }
+    .input-group input:focus, .input-group textarea:focus { outline: none; border-color: var(--gold); }
+    
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem;
+      padding: 0.9rem 1.8rem; background: var(--gold); color: #fff; border: none;
+      border-radius: 50px; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: 0.3s;
+      width: 100%;
+    }
+    .btn:hover { background: var(--gold-light); transform: translateY(-2px); }
+    .btn-red { background: var(--crimson); }
+    .btn-red:hover { background: #E8445A; }
+    .btn-outline { background: transparent; border: 1px solid var(--gold); }
+    .btn-outline:hover { background: rgba(212,175,55,0.1); }
+    
+    /* Dashboard */
+    #dashboard { display: none; max-width: 1100px; margin: 0 auto; padding: 2rem; }
+    .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1.5rem; }
+    .dash-header h1 { font-family: var(--font-heading); color: var(--gold); font-size: 2rem; }
+    
+    .tabs { display: flex; gap: 1rem; margin-bottom: 2rem; }
+    .tab-btn { background: rgba(255,255,255,0.05); padding: 0.8rem 1.5rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; font-weight: 600; transition: 0.3s; }
+    .tab-btn.active { background: var(--gold); border-color: var(--gold); }
+    
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .dashboard-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; }
+    @media (max-width: 800px) { .dashboard-grid { grid-template-columns: 1fr; } }
+    
+    .panel { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 1.8rem; }
+    .panel h2 { font-family: var(--font-heading); margin-bottom: 1.5rem; font-size: 1.4rem; color: #fff; }
+    
+    /* Event List */
+    .event-list { display: flex; flex-direction: column; gap: 1rem; }
+    .event-item { 
+      background: rgba(0,0,0,0.3); padding: 1.2rem; border-radius: 12px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-left: 4px solid var(--gold);
+    }
+    .event-item.expired { border-left-color: #555; opacity: 0.6; }
+    .event-info h4 { margin: 0 0 0.4rem 0; font-size: 1.1rem; }
+    .event-info p { margin: 0; font-size: 0.8rem; color: rgba(255,255,255,0.5); }
+    .event-actions { display: flex; gap: 15px; }
+    .event-actions button {
+      background: transparent; border: none; font-size: 1.2rem; cursor: pointer; transition: 0.2s;
+    }
+    .btn-edit { color: var(--gold); }
+    .btn-edit:hover { color: var(--gold-light); transform: scale(1.1); }
+    .btn-delete { color: var(--crimson); }
+    .btn-delete:hover { color: #ff5e75; transform: scale(1.1); }
+  </style>
+</head>
+<body>
+
+  <!-- Login Mask -->
+  <div id="login-screen" style="position:relative; overflow:hidden;">
+    <div class="bubbles">
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <div class="login-box" style="position:relative; z-index:1;">
+      <img src="logo_new.png" alt="Noah's Ark">
+      <h2 style="font-family: var(--font-heading); font-size: 1.6rem; margin-bottom: 1.5rem;">Admin Access</h2>
+      <div id="login-error" style="color:var(--crimson); font-size:0.85rem; margin-bottom:1rem; display:none;">Incorrect Password</div>
+      <div class="input-group">
+        <input type="password" id="admin-pass" placeholder="Enter password" onkeypress="if(event.key==='Enter') login()" style="padding-right: 2.5rem;">
+        <i class="fas fa-eye" id="togglePassword" style="position:absolute; right:15px; top:50%; transform:translateY(-50%); color:#000; cursor:pointer;" onclick="togglePass()"></i>
+      </div>
+      <button class="btn" onclick="login()">Enter <i class="fas fa-arrow-right"></i></button>
+      <a href="index.html" class="btn" style="display:inline-block; margin-top:10px; background:rgba(255,255,255,0.1); text-decoration:none;"><i class="fas fa-home"></i> Home</a>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard" style="position:relative; overflow:hidden;">
+    <div class="bubbles">
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <div style="position:relative; z-index:1;">
+    <div class="dash-header">
+      <h1><i class="fas fa-church"></i> Executive Dashboard</h1>
+      <button class="btn" style="width:auto; padding: 0.6rem 1.2rem; background:rgba(255,255,255,0.1);" onclick="logout()">Logout</button>
+    </div>
+
+    <!-- TABS Navigation -->
+    <div class="tabs" style="flex-wrap: wrap;">
+      <button class="tab-btn active" onclick="switchTab('tab-events')">Manage Events</button>
+      <button class="tab-btn" onclick="switchTab('tab-notices')">Notice Board</button>
+      <button class="tab-btn" onclick="switchTab('tab-scriptures')">Scriptures</button>
+      <button class="tab-btn" onclick="switchTab('tab-officials')">Officials</button>
+      <button class="tab-btn" onclick="switchTab('tab-services')">Service Times</button>
+      <button class="tab-btn" onclick="switchTab('tab-diocese')">Diocese</button>
+      <button class="tab-btn" onclick="switchTab('tab-mosaic')">Mosaic</button>
+    </div>
+
+    <!-- TAB 1: EVENTS -->
+    <div id="tab-events" class="tab-content active">
+      <div class="dashboard-grid">
+        <!-- Add/Edit Event Form -->
+        <div class="panel">
+          <h2 id="ev-form-title">Add New Event</h2>
+          <form id="add-form" onsubmit="saveEvent(event)">
+            <input type="hidden" id="ev-id">
+            <div class="input-group">
+              <label>Title</label>
+              <input type="text" id="ev-title" required placeholder="e.g. Easter Sunday">
+            </div>
+            <div class="input-group">
+              <label>Date</label>
+              <input type="date" id="ev-date" required>
+            </div>
+            <div class="input-group">
+              <label>Category</label>
+              <select id="ev-cat">
+                <option value="worship">Worship</option>
+                <option value="youth">Youth</option>
+                <option value="women">Women</option>
+                <option value="outreach">Outreach</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label>Description</label>
+              <textarea id="ev-desc" rows="4" required placeholder="Brief description of the event..."></textarea>
+            </div>
+            <div style="display:flex; gap:10px;">
+              <button type="submit" class="btn" id="add-btn">Save Event</button>
+              <button type="button" class="btn btn-outline" id="ev-cancel-btn" style="display:none;" onclick="cancelEventEdit()">Cancel</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Existing Events View -->
+        <div class="panel">
+          <h2>Recorded Events</h2>
+          <p style="font-size:0.85rem; color:rgba(255,255,255,0.6); margin-bottom:1rem;">Expired events are automatically hidden from the public timeline, but kept here for 30 days.</p>
+          <div class="event-list" id="event-list">
+            <p style="color:rgba(255,255,255,0.5);">Loading events...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: NOTICES -->
+    <div id="tab-notices" class="tab-content">
+      <div class="dashboard-grid">
+        <!-- Add/Edit Notice Form -->
+        <div class="panel">
+          <h2 id="not-form-title">Add Notice</h2>
+          <form id="notice-form" onsubmit="saveNotice(event)">
+            <input type="hidden" id="not-id">
+            <div class="input-group">
+              <label>Title</label>
+              <input type="text" id="not-title" required placeholder="e.g. Stewardship Reminder">
+            </div>
+            <div class="input-group">
+              <label>Icon</label>
+              <select id="not-icon">
+                <option value="fas fa-bell">Bell (Alerts/Reminders)</option>
+                <option value="fas fa-book-open">Book (Study/Education)</option>
+                <option value="fas fa-praying-hands">Hands (Prayer/Worship)</option>
+                <option value="fas fa-info-circle">Info (General Info)</option>
+                <option value="fas fa-hands-helping">Helping Hands (Outreach)</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label>Message</label>
+              <textarea id="not-desc" rows="4" required placeholder="The notice details..."></textarea>
+            </div>
+            <div style="display:flex; gap:10px;">
+              <button type="submit" class="btn" id="not-btn">Save Notice</button>
+              <button type="button" class="btn btn-outline" id="not-cancel-btn" style="display:none;" onclick="cancelNoticeEdit()">Cancel</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Existing Notices View -->
+        <div class="panel">
+          <h2>Active Notices</h2>
+          <p style="font-size:0.85rem; color:rgba(255,255,255,0.6); margin-bottom:1rem;">These appear permanently on the Notice Board until you delete them.</p>
+          <div class="event-list" id="notice-list">
+            <p style="color:rgba(255,255,255,0.5);">Loading notices...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: SCRIPTURES -->
+    <div id="tab-scriptures" class="tab-content">
+      <div class="dashboard-grid">
+        <div class="panel">
+          <h2 id="scr-form-title">Add Scripture</h2>
+          <form id="scr-form" onsubmit="saveScr(event)">
+            <input type="hidden" id="scr-id">
+            <div class="input-group"><label>Badge (e.g. 1ST, Psalm)</label><input type="text" id="scr-badge" required></div>
+            <div class="input-group"><label>Reference (e.g. Proverbs 31:10)</label><input type="text" id="scr-ref" required></div>
+            <div class="input-group"><label>Reader Name</label><input type="text" id="scr-reader" required></div>
+            <div style="display:flex; gap:10px;"><button type="submit" class="btn" id="scr-btn">Save</button><button type="button" class="btn btn-outline" id="scr-cancel-btn" style="display:none;" onclick="document.getElementById('scr-form').reset(); document.getElementById('scr-id').value=''; document.getElementById('scr-form-title').innerText='Add Scripture'; document.getElementById('scr-btn').innerText='Save'; this.style.display='none';">Cancel</button></div>
+          </form>
+        </div>
+        <div class="panel">
+          <h2>Scripture Readings</h2>
+          <div class="event-list" id="scr-list"><p style="color:gray;">Loading...</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: OFFICIALS -->
+    <div id="tab-officials" class="tab-content">
+      <div class="dashboard-grid">
+        <div class="panel">
+          <h2 id="off-form-title">Add Official</h2>
+          <form id="off-form" onsubmit="saveOff(event)">
+            <input type="hidden" id="off-id">
+            <div class="input-group"><label>Name</label><input type="text" id="off-name" required></div>
+            <div class="input-group"><label>Role / Position</label><input type="text" id="off-role" required></div>
+            <div style="display:flex; gap:10px;"><button type="submit" class="btn" id="off-btn">Save</button><button type="button" class="btn btn-outline" id="off-cancel-btn" style="display:none;" onclick="document.getElementById('off-form').reset(); document.getElementById('off-id').value=''; document.getElementById('off-form-title').innerText='Add Official'; document.getElementById('off-btn').innerText='Save'; this.style.display='none';">Cancel</button></div>
+          </form>
+        </div>
+        <div class="panel">
+          <h2>Today's Officials</h2>
+          <div class="event-list" id="off-list"><p style="color:gray;">Loading...</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: SERVICES -->
+    <div id="tab-services" class="tab-content">
+      <div class="dashboard-grid">
+        <div class="panel">
+          <h2 id="srv-form-title">Add Service</h2>
+          <form id="srv-form" onsubmit="saveSrv(event)">
+            <input type="hidden" id="srv-id">
+            <div class="input-group"><label>Time (e.g. 7:30 AM)</label><input type="text" id="srv-time" required></div>
+            <div class="input-group"><label>Service Name (e.g. Holy Eucharist)</label><input type="text" id="srv-name" required></div>
+            <div class="input-group"><label>Icon Class</label><input type="text" id="srv-icon" required placeholder="fas fa-sun"></div>
+            <div style="display:flex; gap:10px;"><button type="submit" class="btn" id="srv-btn">Save</button><button type="button" class="btn btn-outline" id="srv-cancel-btn" style="display:none;" onclick="document.getElementById('srv-form').reset(); document.getElementById('srv-id').value=''; document.getElementById('srv-form-title').innerText='Add Service'; document.getElementById('srv-btn').innerText='Save'; this.style.display='none';">Cancel</button></div>
+          </form>
+        </div>
+        <div class="panel">
+          <h2>Service Times</h2>
+          <div class="event-list" id="srv-list"><p style="color:gray;">Loading...</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 6: DIOCESE -->
+    <div id="tab-diocese" class="tab-content">
+      <div class="dashboard-grid">
+        <div class="panel">
+          <h2>Edit Bishop Name</h2>
+          <form id="dio-form" onsubmit="saveDiocese(event)">
+            <div class="input-group">
+              <label>Bishop Name</label>
+              <input type="text" id="dio-bishop" required placeholder="e.g. The Rt. Rev. Dr. Farai Mutamiri">
+            </div>
+            <div style="display:flex; gap:10px;">
+              <button type="submit" class="btn" id="dio-btn">Update Bishop Name</button>
+            </div>
+          </form>
+        </div>
+        <div class="panel">
+          <h2>Current Bishop</h2>
+          <div class="event-list" id="dio-list"><p style="color:gray;">Loading...</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 7: MOSAIC -->
+    <div id="tab-mosaic" class="tab-content">
+      <div class="panel">
+        <h2>Edit Mosaic Gallery</h2>
+        <p style="font-size:0.85rem; color:rgba(255,255,255,0.6); margin-bottom:1rem;">Pick an image from your device for each tile. Changes save automatically when you press Save.</p>
+        <form id="mosaic-form" onsubmit="saveMosaic(event)">
+          <div id="mosaic-fields"></div>
+          <div style="margin-top:1rem;">
+            <button type="submit" class="btn">Save Mosaic</button>
+          </div>
+        </form>
+      </div>
+      <div class="panel">
+        <h2>Preview</h2>
+        <div id="mosaic-preview" style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px;"></div>
+      </div>
+    </div>
+    </div>
+
+  </div>
+
+  <script>
+    let currentPassword = '';
+    let globalEvents = [];
+    let globalNotices = [];
+    let globalScriptures = [];
+    let globalOfficials = [];
+    let globalServices = [];
+    let globalDiocese = {};
+    let globalMosaic = [];
+
+    function togglePass() {
+      const p = document.getElementById('admin-pass');
+      const i = document.getElementById('togglePassword');
+      if (p.type === 'password') {
+        p.type = 'text';
+        i.classList.remove('fa-eye');
+        i.classList.add('fa-eye-slash');
+      } else {
+        p.type = 'password';
+        i.classList.remove('fa-eye-slash');
+        i.classList.add('fa-eye');
+      }
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    async function login() {
+      const pass = document.getElementById('admin-pass').value;
+      if (!pass) return;
+
+      try {
+        const res = await fetch('/api/admin/events', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: pass })
+        });
+        
+        if (!res.ok) {
+          document.getElementById('login-error').style.display = 'block';
+          return;
+        }
+
+        currentPassword = pass;
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        
+        await fetchAllData();
+      } catch (err) {
+        alert("Server error. Ensure Node.js is running.");
+      }
+    }
+
+    function logout() {
+      currentPassword = '';
+      document.getElementById('admin-pass').value = '';
+      document.getElementById('login-screen').style.display = 'flex';
+      document.getElementById('dashboard').style.display = 'none';
+    }
+
+    async function fetchAllData() {
+      // Fetch Events
+      let res = await fetch('/api/admin/events', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: currentPassword })
+      });
+      if (res.ok) {
+        globalEvents = await res.json();
+        renderEvents(globalEvents);
+      }
+      
+      // Fetch Notices
+      res = await fetch('/api/admin/notices', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: currentPassword })
+      });
+      if (res.ok) {
+        globalNotices = await res.json();
+        renderNotices(globalNotices);
+      }
+
+      const endpoints = ['scriptures', 'officials', 'services'];
+      for (let ep of endpoints) {
+        const re = await fetch(`/api/admin/${ep}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: currentPassword }) });
+        if (re.ok) {
+          const data = await re.json();
+          if (ep === 'scriptures') { globalScriptures = data; renderScriptures(data); }
+          if (ep === 'officials') { globalOfficials = data; renderOfficials(data); }
+          if (ep === 'services') { globalServices = data; renderServices(data); }
+        }
+      }
+
+      // Fetch Diocese
+      const dioRes = await fetch('/api/admin/diocese', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: currentPassword })
+      });
+      if (dioRes.ok) {
+        globalDiocese = await dioRes.json();
+        renderDiocese(globalDiocese);
+      }
+
+      // Fetch Mosaic
+      const mRes = await fetch('/api/admin/mosaic', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: currentPassword })
+      });
+      if (mRes.ok) {
+        globalMosaic = await mRes.json();
+        renderMosaicAdmin(globalMosaic);
+      }
+    }
+
+    // ==========================================
+    // EVENTS LOGIC
+    // ==========================================
+    function renderEvents(events) {
+      const list = document.getElementById('event-list');
+      list.innerHTML = '';
+      if (events.length === 0) return list.innerHTML = '<p style="color:rgba(255,255,255,0.5);">No events found.</p>';
+
+      const today = new Date();
+      today.setHours(0,0,0,0);
+
+      events.forEach(ev => {
+        const evDate = new Date(ev.date);
+        const isExpired = evDate < today;
+        const dateStr = evDate.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric'});
+
+        const div = document.createElement('div');
+        div.className = `event-item ${isExpired ? 'expired' : ''}`;
+        div.innerHTML = `
+          <div class="event-info">
+            <h4>${ev.title} <span style="font-size:0.7rem; padding: 2px 6px; background:rgba(255,255,255,0.1); border-radius:4px; margin-left:8px; text-transform:uppercase;">${ev.category}</span></h4>
+            <p><i class="far fa-calendar"></i> ${dateStr} ${isExpired ? '<span style="color:var(--crimson); margin-left:10px;">(Expired)</span>' : ''}</p>
+          </div>
+          <div class="event-actions">
+            <button class="btn-edit" onclick="editEvent('${ev.id}')" title="Edit"><i class="fas fa-edit"></i></button>
+            <button class="btn-delete" onclick="deleteEvent('${ev.id}')" title="Delete"><i class="fas fa-trash-alt"></i></button>
+          </div>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    async function saveEvent(e) {
+      e.preventDefault();
+      const payload = {
+        id: document.getElementById('ev-id').value || undefined,
+        title: document.getElementById('ev-title').value,
+        date: document.getElementById('ev-date').value,
+        category: document.getElementById('ev-cat').value,
+        description: document.getElementById('ev-desc').value
+      };
+
+      try {
+        await fetch('/api/events/add', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: currentPassword, event: payload })
+        });
+        cancelEventEdit();
+        await fetchAllData();
+      } catch (err) { alert("Failed to save event. " + err.message); }
+    }
+
+    function editEvent(id) {
+      const ev = globalEvents.find(e => e.id === id);
+      if (!ev) return;
+      document.getElementById('ev-id').value = ev.id;
+      document.getElementById('ev-title').value = ev.title;
+      document.getElementById('ev-date').value = ev.date;
+      document.getElementById('ev-cat').value = ev.category;
+      document.getElementById('ev-desc').value = ev.description;
+      
+      document.getElementById('ev-form-title').innerText = 'Edit Event';
+      document.getElementById('add-btn').innerText = 'Update Event';
+      document.getElementById('ev-cancel-btn').style.display = 'block';
+      window.scrollTo(0,0);
+    }
+
+    function cancelEventEdit() {
+      document.getElementById('add-form').reset();
+      document.getElementById('ev-id').value = '';
+      document.getElementById('ev-form-title').innerText = 'Add New Event';
+      document.getElementById('add-btn').innerText = 'Save Event';
+      document.getElementById('ev-cancel-btn').style.display = 'none';
+    }
+
+    async function deleteEvent(id) {
+      if (!confirm("Are you sure you want to delete this event permanently?")) return;
+      try {
+        await fetch('/api/events/delete', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: currentPassword, id: id })
+        });
+        await fetchAllData();
+      } catch (err) { alert("Failed to delete event."); }
+    }
+
+    // ==========================================
+    // NOTICES LOGIC
+    // ==========================================
+    function renderNotices(notices) {
+      const list = document.getElementById('notice-list');
+      list.innerHTML = '';
+      if (notices.length === 0) return list.innerHTML = '<p style="color:rgba(255,255,255,0.5);">No active notices.</p>';
+
+      notices.forEach(n => {
+        const div = document.createElement('div');
+        div.className = `event-item`;
+        div.style.borderLeftColor = 'var(--blue)';
+        div.innerHTML = `
+          <div class="event-info">
+            <h4><i class="${n.icon} " style="color:var(--gold); margin-right:5px;"></i> ${n.title}</h4>
+            <p>${n.description.substring(0,60)}...</p>
+          </div>
+          <div class="event-actions">
+            <button class="btn-edit" onclick="editNotice('${n.id}')" title="Edit"><i class="fas fa-edit"></i></button>
+            <button class="btn-delete" onclick="deleteNotice('${n.id}')" title="Delete"><i class="fas fa-trash-alt"></i></button>
+          </div>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    async function saveNotice(e) {
+      e.preventDefault();
+      const payload = {
+        id: document.getElementById('not-id').value || undefined,
+        title: document.getElementById('not-title').value,
+        icon: document.getElementById('not-icon').value,
+        description: document.getElementById('not-desc').value
+      };
+
+      try {
+        await fetch('/api/notices/add', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: currentPassword, notice: payload })
+        });
+        cancelNoticeEdit();
+        await fetchAllData();
+      } catch (err) { alert("Failed to save notice. " + err.message); }
+    }
+
+    function editNotice(id) {
+      const n = globalNotices.find(e => e.id === id);
+      if (!n) return;
+      document.getElementById('not-id').value = n.id;
+      document.getElementById('not-title').value = n.title;
+      document.getElementById('not-icon').value = n.icon;
+      document.getElementById('not-desc').value = n.description;
+      
+      document.getElementById('not-form-title').innerText = 'Edit Notice';
+      document.getElementById('not-btn').innerText = 'Update Notice';
+      document.getElementById('not-cancel-btn').style.display = 'block';
+    }
+
+    function cancelNoticeEdit() {
+      document.getElementById('notice-form').reset();
+      document.getElementById('not-id').value = '';
+      document.getElementById('not-form-title').innerText = 'Add Notice';
+      document.getElementById('not-btn').innerText = 'Save Notice';
+      document.getElementById('not-cancel-btn').style.display = 'none';
+    }
+
+    async function deleteNotice(id) {
+      if (!confirm("Are you sure you want to delete this notice?")) return;
+      try {
+        await fetch('/api/notices/delete', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: currentPassword, id: id })
+        });
+        await fetchAllData();
+      } catch (err) { alert("Failed to delete notice."); }
+    }
+
+    // ==========================================
+    // EXTENDED MINISTRY LOGIC
+    // ==========================================
+    async function saveGeneric(ep, payload, cb) {
+      try {
+        await fetch(`/api/${ep}/add`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: currentPassword, item: payload })
+        });
+        cb();
+        await fetchAllData();
+      } catch (err) { alert("Failed to save. " + err.message); }
+    }
+    async function deleteGeneric(ep, id) {
+      if (!confirm("Delete this permanently?")) return;
+      try {
+        await fetch(`/api/${ep}/delete`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: currentPassword, id: id })
+        });
+        await fetchAllData();
+      } catch (err) { alert("Failed to delete."); }
+    }
+
+    // SCRIPTURES
+    function renderScriptures(data) {
+      const list = document.getElementById('scr-list');
+      list.innerHTML = '';
+      if (data.length === 0) return list.innerHTML = '<p style="color:gray;">No scriptures.</p>';
+      data.forEach(n => {
+        const div = document.createElement('div'); div.className = 'event-item'; div.style.borderLeftColor = 'var(--gold-light)';
+        div.innerHTML = `<div class="event-info"><h4>${n.badge}: ${n.reference}</h4><p>Reader: ${n.reader}</p></div>
+        <div class="event-actions"><button class="btn-edit" onclick="editScr('${n.id}')"><i class="fas fa-edit"></i></button><button class="btn-delete" onclick="deleteGeneric('scriptures','${n.id}')"><i class="fas fa-trash-alt"></i></button></div>`;
+        list.appendChild(div);
+      });
+    }
+    async function saveScr(e) {
+      e.preventDefault();
+      saveGeneric('scriptures', { id: document.getElementById('scr-id').value || undefined, badge: document.getElementById('scr-badge').value, reference: document.getElementById('scr-ref').value, reader: document.getElementById('scr-reader').value }, () => {
+        document.getElementById('scr-form').reset(); document.getElementById('scr-id').value = '';
+        document.getElementById('scr-form-title').innerText = 'Add Scripture'; document.getElementById('scr-btn').innerText = 'Save'; document.getElementById('scr-cancel-btn').style.display='none';
+      });
+    }
+    function editScr(id) {
+      const n = globalScriptures.find(e => e.id === id); if(!n) return;
+      document.getElementById('scr-id').value = n.id; document.getElementById('scr-badge').value = n.badge; document.getElementById('scr-ref').value = n.reference; document.getElementById('scr-reader').value = n.reader;
+      document.getElementById('scr-form-title').innerText = 'Edit Scripture'; document.getElementById('scr-btn').innerText = 'Update'; document.getElementById('scr-cancel-btn').style.display='block';
+    }
+
+    // OFFICIALS
+    function renderOfficials(data) {
+      const list = document.getElementById('off-list'); list.innerHTML = '';
+      if (data.length === 0) return list.innerHTML = '<p style="color:gray;">No officials.</p>';
+      data.forEach(n => {
+        const div = document.createElement('div'); div.className = 'event-item'; div.style.borderLeftColor = 'var(--crimson)';
+        div.innerHTML = `<div class="event-info"><h4>${n.name}</h4><p>${n.role}</p></div>
+        <div class="event-actions"><button class="btn-edit" onclick="editOff('${n.id}')"><i class="fas fa-edit"></i></button><button class="btn-delete" onclick="deleteGeneric('officials','${n.id}')"><i class="fas fa-trash-alt"></i></button></div>`;
+        list.appendChild(div);
+      });
+    }
+    async function saveOff(e) {
+      e.preventDefault();
+      saveGeneric('officials', { id: document.getElementById('off-id').value || undefined, name: document.getElementById('off-name').value, role: document.getElementById('off-role').value }, () => {
+        document.getElementById('off-form').reset(); document.getElementById('off-id').value = '';
+        document.getElementById('off-form-title').innerText = 'Add Official'; document.getElementById('off-btn').innerText = 'Save'; document.getElementById('off-cancel-btn').style.display='none';
+      });
+    }
+    function editOff(id) {
+      const n = globalOfficials.find(e => e.id === id); if(!n) return;
+      document.getElementById('off-id').value = n.id; document.getElementById('off-name').value = n.name; document.getElementById('off-role').value = n.role;
+      document.getElementById('off-form-title').innerText = 'Edit Official'; document.getElementById('off-btn').innerText = 'Update'; document.getElementById('off-cancel-btn').style.display='block';
+    }
+
+    // SERVICES
+    function renderServices(data) {
+      const list = document.getElementById('srv-list'); list.innerHTML = '';
+      if (data.length === 0) return list.innerHTML = '<p style="color:gray;">No services.</p>';
+      data.forEach(n => {
+        const div = document.createElement('div'); div.className = 'event-item';
+        div.innerHTML = `<div class="event-info"><h4><i class="${n.icon}" style="margin-right:5px;"></i> ${n.time}</h4><p>${n.name}</p></div>
+        <div class="event-actions"><button class="btn-edit" onclick="editSrv('${n.id}')"><i class="fas fa-edit"></i></button><button class="btn-delete" onclick="deleteGeneric('services','${n.id}')"><i class="fas fa-trash-alt"></i></button></div>`;
+        list.appendChild(div);
+      });
+    }
+    async function saveSrv(e) {
+      e.preventDefault();
+      saveGeneric('services', { id: document.getElementById('srv-id').value || undefined, time: document.getElementById('srv-time').value, name: document.getElementById('srv-name').value, icon: document.getElementById('srv-icon').value }, () => {
+        document.getElementById('srv-form').reset(); document.getElementById('srv-id').value = '';
+        document.getElementById('srv-form-title').innerText = 'Add Service'; document.getElementById('srv-btn').innerText = 'Save'; document.getElementById('srv-cancel-btn').style.display='none';
+      });
+    }
+    function editSrv(id) {
+      const n = globalServices.find(e => e.id === id); if(!n) return;
+      document.getElementById('srv-id').value = n.id; document.getElementById('srv-time').value = n.time; document.getElementById('srv-name').value = n.name; document.getElementById('srv-icon').value = n.icon;
+      document.getElementById('srv-form-title').innerText = 'Edit Service'; document.getElementById('srv-btn').innerText = 'Update'; document.getElementById('srv-cancel-btn').style.display='block';
+    }
+
+    // DIOCESE
+    function renderDiocese(data) {
+      document.getElementById('dio-bishop').value = data.bishopName || '';
+      const list = document.getElementById('dio-list');
+      list.innerHTML = '';
+      const div = document.createElement('div'); div.className = 'event-item'; div.style.borderLeftColor = 'var(--gold)';
+      div.innerHTML = `<div class="event-info"><h4 style="color:var(--gold);font-size:1.3rem;font-family:var(--font-heading);margin-bottom:0.6rem;">${data.bishopName || 'The Rt. Rev. Bishop of Harare'}</h4><p style="color:rgba(255,255,255,0.6);">Bishop of Harare</p></div>`;
+      list.appendChild(div);
+    }
+    async function saveDiocese(e) {
+      e.preventDefault();
+      const bishopName = document.getElementById('dio-bishop').value;
+      try {
+        await fetch('/api/diocese/update', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: currentPassword, bishopName })
+        });
+        await fetchAllData();
+      } catch (err) { alert("Failed to update bishop name. " + err.message); }
+    }
+
+    // MOSAIC
+    function renderMosaicAdmin(items) {
+      const container = document.getElementById('mosaic-fields');
+      container.innerHTML = '';
+      items.forEach((item, i) => {
+        const div = document.createElement('div');
+        div.style.cssText = 'border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:1rem; margin-bottom:1rem;';
+        const previewUrl = item.imageSrc || (item.iconSvg ? '' : '');
+        div.innerHTML = `
+          <h4 style="margin:0 0 0.6rem; font-family:var(--font-heading); color:var(--gold);">Tile ${i+1}</h4>
+          <div class="input-group"><label>Label</label><input type="text" id="mos-label-${i}" value="${item.label || ''}" required></div>
+          <div class="input-group"><label>Image</label>
+            <input type="file" id="mos-file-${i}" accept="image/*" onchange="handleMosaicFile(${i})" style="display:none;">
+            <button type="button" class="btn" style="background:rgba(255,255,255,0.1); font-size:0.8rem;" onclick="document.getElementById('mos-file-${i}').click()">Choose from device</button>
+            <div id="mos-file-info-${i}" style="font-size:0.8rem; color:rgba(255,255,255,0.5); margin-top:4px;">${item.imageSrc ? 'Current: ' + item.imageSrc : 'No image selected'}</div>
+            <input type="hidden" id="mos-img-${i}" value="${item.imageSrc || ''}">
+          </div>
+          <div style="display:flex; gap:10px; align-items:center; margin-top:0.5rem;">
+            <label style="font-size:0.8rem; color:rgba(255,255,255,0.6);"><input type="checkbox" id="mos-tall-${i}" ${item.tall ? 'checked' : ''}> Tall (2 rows)</label>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+      updateMosaicPreview(items);
+    }
+
+    async function handleMosaicFile(index) {
+      const input = document.getElementById(`mos-file-${index}`);
+      if (!input.files || !input.files[0]) return;
+      const file = input.files[0];
+      const info = document.getElementById(`mos-file-info-${index}`);
+      info.textContent = 'Uploading...';
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const data = reader.result;
+        const filename = file.name;
+        try {
+          const res = await fetch('/api/upload', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password: currentPassword, filename, data })
+          });
+          const result = await res.json();
+          if (result.success) {
+            document.getElementById(`mos-img-${index}`).value = result.filename;
+            info.textContent = 'Uploaded: ' + result.filename;
+            globalMosaic[index].imageSrc = result.filename;
+            updateMosaicPreview(globalMosaic);
+          } else {
+            info.textContent = 'Upload failed.';
+          }
+        } catch (err) { info.textContent = 'Upload error.'; }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function updateMosaicPreview(items) {
+      const preview = document.getElementById('mosaic-preview');
+      preview.innerHTML = '';
+      items.forEach(item => {
+        const div = document.createElement('div');
+        div.style.cssText = 'border-radius:8px; overflow:hidden; position:relative; height:80px; background:var(--navy-dark);' + (item.tall ? ' grid-row: span 2; height:auto;' : '');
+        if (item.imageSrc) {
+          div.innerHTML = `<img src="${item.imageSrc}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'">`;
+        } else if (item.bgClass) {
+          div.className = item.bgClass;
+        }
+        const label = document.createElement('span');
+        label.textContent = item.label;
+        label.style.cssText = 'position:absolute; bottom:4px; left:4px; font-size:0.65rem; color:#fff; background:rgba(0,0,0,0.5); padding:2px 4px; border-radius:3px;';
+        div.appendChild(label);
+        preview.appendChild(div);
+      });
+    }
+
+    async function saveMosaic(e) {
+      e.preventDefault();
+      const items = globalMosaic.map((orig, i) => ({
+        id: orig.id,
+        label: document.getElementById(`mos-label-${i}`).value,
+        imageSrc: document.getElementById(`mos-img-${i}`).value,
+        bgClass: orig.bgClass || '',
+        tall: document.getElementById(`mos-tall-${i}`).checked,
+        iconSvg: orig.iconSvg || ''
+      }));
+      try {
+        await fetch('/api/mosaic/update', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: currentPassword, items })
+        });
+        updateMosaicPreview(items);
+        alert('Mosaic saved successfully');
+      } catch (err) { alert('Failed to save mosaic. ' + err.message); }
+    }
+
+  </script>
+</body>
+</html>

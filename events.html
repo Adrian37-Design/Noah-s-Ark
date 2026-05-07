@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notices &amp; Events | Noah's Ark Fairview</title>
+  <link rel="icon" href="logo_new.png">
+  <meta name="description" content="Stay up to date with the latest notices, events, and news from Noah's Ark Anglican Church, Fairview.">
+  <meta name="keywords" content="Church Events Harare, Anglican Notices Zimbabwe, Noah's Ark Events Fairview">
+  <meta property="og:title"       content="Events &amp; Notices | Noah's Ark Fairview">
+  <meta property="og:description" content="Upcoming events, notices and news from Noah's Ark Fairview.">
+  <meta property="og:image"       content="logo_new.png">
+
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="global.css">
+  <script src="components.js" defer></script>
+  <script src="animations.js" defer></script>
+</head>
+<body>
+
+  <div id="navbar"></div>
+
+  <div class="page-hero">
+    <h1 class="reveal">Events &amp; Notices</h1>
+    <p class="reveal reveal-delay-1">Stay connected with everything happening at Noah's Ark.</p>
+  </div>
+
+  <main class="page-content">
+
+    <!-- FILTER BAR -->
+    <div class="event-filter-bar reveal">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="worship">Worship</button>
+      <button class="filter-btn" data-filter="youth">Youth</button>
+      <button class="filter-btn" data-filter="women">Women</button>
+      <button class="filter-btn" data-filter="outreach">Outreach</button>
+      <button class="filter-btn" data-filter="notice">Notices</button>
+    </div>
+
+    <!-- EVENTS GRID -->
+    <div class="grid-3 stagger-group" id="dynamic-events-grid">
+      <div style="grid-column: 1/-1; text-align: center; padding: 4rem; color: rgba(255,255,255,0.5);">
+         <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--gold); margin-bottom: 1rem;"></i>
+         <p>Loading upcoming events...</p>
+      </div>
+    </div>
+
+    <!-- SCRIPT FOR DYNAMIC EVENTS -->
+    <script>
+      document.addEventListener('DOMContentLoaded', async () => {
+        const grid = document.getElementById('dynamic-events-grid');
+        
+        try {
+          const res = await fetch('/api/events');
+          const events = await res.json();
+          
+          if (events.length === 0) {
+            grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 4rem; color: rgba(255,255,255,0.5);"><i class="far fa-calendar-times" style="font-size: 3rem; margin-bottom:1rem; opacity:0.5;"></i><p>There are no upcoming events at this time.</p></div>';
+            return;
+          }
+
+          let html = '';
+          const gradients = {
+            'worship': 'linear-gradient(135deg, var(--gold-dark), var(--gold))',
+            'outreach': 'linear-gradient(135deg, #3d1a00, var(--crimson))',
+            'women': 'linear-gradient(135deg, var(--navy-dark), #4a007a)',
+            'notice': 'linear-gradient(135deg, #0d3b2b, #1a5c40)',
+            'youth': '' // default dark
+          };
+
+          events.forEach(ev => {
+            const evDate = new Date(ev.date + 'T12:00:00'); // Force midday to avoid timezone shifts
+            const day = evDate.getDate();
+            const monthYear = evDate.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
+            const bgStyle = gradients[ev.category] ? `style="background: ${gradients[ev.category]};"` : '';
+
+            html += `
+              <div class="event-grid-card stagger-item" data-category="${ev.category}">
+                <div class="event-card-header" ${bgStyle}>
+                  <div class="event-card-date">
+                    <span class="day">${day}</span>
+                    <span class="month-year">${monthYear}</span>
+                  </div>
+                </div>
+                <div class="event-card-body">
+                  <span class="event-tag">${ev.category.charAt(0).toUpperCase() + ev.category.slice(1)}</span>
+                  <h3>${ev.title}</h3>
+                  <p>${ev.description}</p>
+                </div>
+              </div>
+            `;
+          });
+          
+          grid.innerHTML = html;
+          
+          // Re-trigger IntersectionObserver for new stagger items if it exists
+          if (window.StaggerObserver) {
+            document.querySelectorAll('#dynamic-events-grid .stagger-item').forEach(el => window.StaggerObserver.observe(el));
+          }
+
+        } catch (err) {
+          grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 4rem; color: var(--crimson);"><p>Error loading events. Please ensure the server is running.</p></div>';
+        }
+      });
+    </script>
+
+    <!-- NOTICE BOARD -->
+    <section style="margin-top: 4rem;" aria-labelledby="notice-heading">
+      <div class="sec-head reveal">
+        <span class="sec-label">Important</span>
+        <h2 class="sec-title" id="notice-heading">Notice Board</h2>
+        <div class="sec-divider"></div>
+      </div>
+      <div id="dynamic-notices-container" style="display:flex; flex-direction:column; gap:1rem; margin-top:2rem;">
+        <p style="color:rgba(0,0,0,0.5);">Loading notices...</p>
+      </div>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+          const container = document.getElementById('dynamic-notices-container');
+          try {
+            const res = await fetch('/api/notices');
+            const notices = await res.json();
+            
+            if (notices.length === 0) {
+              container.innerHTML = '<p style="color:rgba(0,0,0,0.5);">No active notices at this time.</p>';
+              return;
+            }
+
+            let html = '';
+            notices.forEach((n, idx) => {
+              const delayClass = idx > 0 ? `reveal-delay-${Math.min(idx, 3)}` : '';
+              html += `
+                <div class="alert-box reveal ${delayClass}">
+                  <h4><i class="${n.icon || 'fas fa-info-circle'}" style="margin-right:0.5rem;"></i> ${n.title}</h4>
+                  <p>${n.description}</p>
+                </div>
+              `;
+            });
+            container.innerHTML = html;
+
+            if (window.IntersectionObserver) {
+              const obs = new IntersectionObserver(entries => {
+                entries.forEach(e => {
+                  if (e.isIntersecting) {
+                    e.target.classList.add('visible');
+                    obs.unobserve(e.target);
+                  }
+                });
+              }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+              
+              document.querySelectorAll('#dynamic-notices-container .reveal').forEach(el => obs.observe(el));
+            } else {
+              document.querySelectorAll('#dynamic-notices-container .reveal').forEach(el => el.classList.add('visible'));
+            }
+          } catch (err) {
+            container.innerHTML = '<p style="color:var(--crimson);">Notice board unavailable.</p>';
+          }
+        });
+      </script>
+    </section>
+
+  </main>
+
+  <div id="footer"></div>
+
+</body>
+</html>

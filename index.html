@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Noah's Ark Fairview | A Community of Faith</title>
+  <link rel="icon" href="logo_new.png">
+  <meta name="description" content="Welcome to Noah's Ark Anglican Church, Fairview — a vibrant community of faith, worship, and service. Join us every Sunday.">
+  <meta name="keywords" content="Noah's Ark Fairview, Anglican Church Harare, Sunday Worship, Christian Community Zimbabwe">
+  <meta property="og:title"       content="Noah's Ark Fairview | A Community of Faith">
+  <meta property="og:description" content="Where faith finds a home and community truly begins.">
+  <meta property="og:image"       content="logo_new.png">
+  <meta property="og:type"        content="website">
+
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="global.css">
+  <script src="components.js"  defer></script>
+  <script src="animations.js"  defer></script>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <div id="navbar"></div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       1. CINEMATIC HERO
+  ═══════════════════════════════════════════════════════════ -->
+  <section class="home-hero" id="hero" aria-label="Welcome hero">
+    <canvas id="particleCanvas" aria-hidden="true"></canvas>
+    <div class="hero-content reveal">
+      <img src="logo_new.png" alt="Noah's Ark Fairview Logo" class="hero-logo">
+      <h1 class="hero-title">Welcome to <span class="gold-text">Noah's Ark</span></h1>
+      <p class="hero-subtitle">Where faith finds a home and community truly begins.</p>
+      <div class="hero-cta">
+        <a href="worship.html" class="btn btn-gold">
+          <i class="fas fa-church"></i> Join Sunday Worship
+        </a>
+        <a href="about.html" class="btn btn-ghost">
+          Our Story &rarr;
+        </a>
+      </div>
+    </div>
+    <div class="scroll-indicator" aria-label="Scroll to discover more">
+      <span></span>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       2. SCRIPTURE TICKER
+  ═══════════════════════════════════════════════════════════ -->
+  <div class="scripture-ticker" aria-label="Scripture verses">
+    <div class="ticker-track" aria-hidden="true">
+      <span>&ldquo;For I know the plans I have for you...&rdquo; &mdash; <strong>Jeremiah 29:11</strong></span>
+      <span class="ticker-separator">&#10022;</span>
+      <span>&ldquo;I can do all things through Christ who strengthens me.&rdquo; &mdash; <strong>Philippians 4:13</strong></span>
+      <span class="ticker-separator">&#10022;</span>
+      <span>&ldquo;The Lord is my shepherd; I shall not want.&rdquo; &mdash; <strong>Psalm 23:1</strong></span>
+      <span class="ticker-separator">&#10022;</span>
+      <span>&ldquo;Be still, and know that I am God.&rdquo; &mdash; <strong>Psalm 46:10</strong></span>
+      <span class="ticker-separator">&#10022;</span>
+      <span>&ldquo;Love one another as I have loved you.&rdquo; &mdash; <strong>John 15:12</strong></span>
+      <span class="ticker-separator">&#10022;</span>
+      <!-- Duplicate for seamless loop -->
+      <span>&ldquo;For I know the plans I have for you...&rdquo; &mdash; <strong>Jeremiah 29:11</strong></span>
+      <span class="ticker-separator">&#10022;</span>
+      <span>&ldquo;I can do all things through Christ who strengthens me.&rdquo; &mdash; <strong>Philippians 4:13</strong></span>
+      <span class="ticker-separator">&#10022;</span>
+      <span>&ldquo;The Lord is my shepherd; I shall not want.&rdquo; &mdash; <strong>Psalm 23:1</strong></span>
+      <span class="ticker-separator">&#10022;</span>
+      <span>&ldquo;Be still, and know that I am God.&rdquo; &mdash; <strong>Psalm 46:10</strong></span>
+      <span class="ticker-separator">&#10022;</span>
+      <span>&ldquo;Love one another as I have loved you.&rdquo; &mdash; <strong>John 15:12</strong></span>
+      <span class="ticker-separator">&#10022;</span>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       3. SERVICE TIMES (Dark Glassmorphic)
+  ═══════════════════════════════════════════════════════════ -->
+  <section class="service-times-section dark-section" aria-labelledby="service-heading">
+    <div class="section-wrap tight">
+      <div class="sec-head" style="text-align:center;">
+        <span class="sec-label">Every Sunday</span>
+        <h2 class="sec-title gold-line reveal" id="service-heading">Join Us for Worship</h2>
+        <div class="sec-divider" style="margin:14px auto 0;"></div>
+      </div>
+      <div class="service-times-grid stagger-group" id="home-dynamic-srv">
+        <p style="color:rgba(255,255,255,0.5); text-align:center; width:100%; grid-column:1/-1;">Loading schedules...</p>
+      </div>
+      <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+          try {
+            const res = await fetch('/api/services');
+            if (!res.ok) return;
+            const srv = await res.json();
+            const grid = document.getElementById('home-dynamic-srv');
+            if (srv.length === 0) {
+              grid.innerHTML = '<p style="color:rgba(255,255,255,0.5); text-align:center; width:100%; grid-column:1/-1;">Check back for updated schedules.</p>';
+            } else {
+              let html = '';
+              srv.forEach(s => {
+                html += `<div class="service-card stagger-item"><span class="service-icon"><i class="${s.icon}"></i></span><span class="service-time">${s.time}</span><span class="service-name">${s.name}</span></div>`;
+              });
+              grid.innerHTML = html;
+              
+              if (window.IntersectionObserver) {
+                const obs = new IntersectionObserver(entries => {
+                  entries.forEach(e => {
+                    if (e.isIntersecting) {
+                      e.target.querySelectorAll('.stagger-item').forEach((item, i) => {
+                        setTimeout(() => item.classList.add('visible'), i * 130);
+                      });
+                      obs.unobserve(e.target);
+                    }
+                  });
+                }, { threshold: 0.1 });
+                obs.observe(grid);
+              } else {
+                grid.querySelectorAll('.stagger-item').forEach(el => el.classList.add('visible'));
+              }
+            }
+          } catch (err) { console.error("Could not load services."); }
+        });
+      </script>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       4. STATS STRIP
+  ═══════════════════════════════════════════════════════════ -->
+  <div class="stats-strip" aria-label="Church community stats">
+    <div class="stats-grid">
+      <div class="stat-item reveal">
+        <span class="stat-number" data-count="35" data-suffix="+">0+</span>
+        <span class="stat-label">Years of Service</span>
+      </div>
+      <div class="stat-item reveal reveal-delay-1">
+        <span class="stat-number" data-count="100" data-suffix="+">0+</span>
+        <span class="stat-label">Congregation Members</span>
+      </div>
+      <div class="stat-item reveal reveal-delay-2">
+        <span class="stat-number" data-count="12" data-suffix="">0</span>
+        <span class="stat-label">Active Ministries</span>
+      </div>
+      <div class="stat-item reveal reveal-delay-3">
+        <span class="stat-number" data-count="1" data-suffix="">0</span>
+        <span class="stat-label">Sunday Services</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       5. PASTOR'S WELCOME QUOTE
+  ═══════════════════════════════════════════════════════════ -->
+  <section class="welcome-section" aria-labelledby="welcome-heading">
+    <div class="section-wrap narrow" style="text-align:center;">
+      <span class="sec-label reveal" id="welcome-heading">A Word from Our Priest</span>
+      <blockquote class="pastor-quote reveal reveal-delay-1">
+        <p>&ldquo;We are more than a congregation &mdash; we are a family, built on faith, bound by love, and called to serve our community with joy and purpose. All are truly welcome here.&rdquo;</p>
+        <footer id="priest-name">Ven. Dr. E. Katsande &mdash; Priest-in-Charge</footer>
+      </blockquote>
+    </div>
+  </section>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const res = await fetch('/api/officials');
+        if (!res.ok) return;
+        const officials = await res.json();
+        const priest = officials.find(o => /rector|priest/i.test(o.role));
+        if (priest) {
+          document.getElementById('priest-name').textContent = priest.name + ' \u2014 ' + priest.role;
+        }
+      } catch (err) { /* keep default */ }
+    });
+  </script>
+
+  <!-- ═══════════════════════════════════════════════════════
+       6. PILLARS OF FAITH
+  ═══════════════════════════════════════════════════════════ -->
+  <section aria-labelledby="pillars-heading" style="background: var(--parchment);">
+    <div class="section-wrap">
+      <div class="sec-head" style="text-align:center;" class="reveal">
+        <span class="sec-label">What We Stand For</span>
+        <h2 class="sec-title gold-line reveal" id="pillars-heading">Pillars of Our Faith</h2>
+        <div class="sec-divider" style="margin:14px auto 0;"></div>
+        <p class="sec-subtitle reveal reveal-delay-1">Three commitments that shape everything we do at Noah's Ark.</p>
+      </div>
+      <div class="grid-3 stagger-group" style="margin-top:0;">
+        <div class="pillar-card stagger-item">
+          <div class="pillar-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="9" x2="22" y2="9"/></svg>
+          </div>
+          <h3>Worship</h3>
+          <p>We gather every Sunday to encounter the living God through prayer, scripture, song, and the Holy Eucharist.</p>
+        </div>
+        <div class="pillar-card stagger-item">
+          <div class="pillar-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <h3>Community</h3>
+          <p>From youth groups to senior circles, there is a place for every soul in our growing parish family.</p>
+        </div>
+        <div class="pillar-card stagger-item">
+          <div class="pillar-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </div>
+          <h3>Outreach</h3>
+          <p>Dedicated to serving Fairview and beyond through community support, compassion, and action.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       7. UPCOMING EVENTS TEASER
+  ═══════════════════════════════════════════════════════════ -->
+  <section aria-labelledby="events-heading" style="background: var(--cream);">
+    <div class="section-wrap">
+      <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:2.5rem; flex-wrap:wrap; gap:1rem;">
+        <div class="sec-head" style="margin-bottom:0;">
+          <span class="sec-label">Coming Up</span>
+          <h2 class="sec-title reveal" id="events-heading">Upcoming Events</h2>
+          <div class="sec-divider"></div>
+        </div>
+        <a href="events.html" class="btn btn-outline-gold reveal reveal-right">View All Events &rarr;</a>
+      </div>
+      <div class="grid-3 stagger-group" id="home-dynamic-events">
+        <p style="color:rgba(0,0,0,0.5);">Loading events...</p>
+      </div>
+      <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+          const grid = document.getElementById('home-dynamic-events');
+          try {
+            const res = await fetch('/api/events');
+            const events = await res.json();
+            
+            if (events.length === 0) {
+              grid.innerHTML = '<p style="color:rgba(0,0,0,0.5);">No upcoming events.</p>';
+              return;
+            }
+
+            // Take top 3 events
+            const topEvents = events.slice(0, 3);
+            let html = '';
+
+            topEvents.forEach(ev => {
+              const evDate = new Date(ev.date + 'T12:00:00');
+              const day = evDate.getDate();
+              const month = evDate.toLocaleDateString('en-GB', { month: 'short' });
+              
+              html += `
+                <a href="events.html" class="event-date-card stagger-item" style="text-decoration:none;">
+                  <div class="event-date-badge">
+                    <span class="day">${day}</span>
+                    <span class="month">${month}</span>
+                  </div>
+                  <div class="event-info">
+                    <h4>${ev.title}</h4>
+                    <p>${ev.description}</p>
+                    <span class="event-tag">${ev.category.charAt(0).toUpperCase() + ev.category.slice(1)}</span>
+                  </div>
+                </a>
+              `;
+            });
+            grid.innerHTML = html;
+
+            if (window.IntersectionObserver) {
+              const obs = new IntersectionObserver(entries => {
+                entries.forEach(e => {
+                  if (e.isIntersecting) {
+                    e.target.querySelectorAll('.stagger-item').forEach((item, i) => {
+                      setTimeout(() => item.classList.add('visible'), i * 130);
+                    });
+                    obs.unobserve(e.target);
+                  }
+                });
+              }, { threshold: 0.1 });
+              obs.observe(grid);
+            } else {
+              grid.querySelectorAll('.stagger-item').forEach(el => el.classList.add('visible'));
+            }
+          } catch (err) {
+            grid.innerHTML = '<p style="color:var(--crimson);">Events unavailable.</p>';
+          }
+        });
+      </script>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       8. COMMUNITY MOSAIC
+  ═══════════════════════════════════════════════════════════ -->
+  <section class="mosaic-section dark-section" aria-labelledby="mosaic-heading">
+    <div class="section-wrap">
+      <div class="sec-head" style="text-align:center;">
+        <span class="sec-label">Our Family</span>
+        <h2 class="sec-title gold-line reveal" id="mosaic-heading">Life at Noah's Ark</h2>
+        <div class="sec-divider" style="margin:14px auto 0;"></div>
+      </div>
+      <div class="mosaic-grid reveal" id="mosaic-grid">
+        <p style="color:rgba(255,255,255,0.5); text-align:center; grid-column:1/-1;">Loading gallery...</p>
+      </div>
+      <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+          try {
+            const res = await fetch('/api/mosaic');
+            if (!res.ok) return;
+            const items = await res.json();
+            const grid = document.getElementById('mosaic-grid');
+            grid.innerHTML = '';
+            items.forEach(item => {
+              const div = document.createElement('div');
+              div.className = 'mosaic-item' + (item.tall ? ' mosaic-tall' : '') + (item.bgClass ? ' ' + item.bgClass : '');
+              if (item.imageSrc) {
+                div.innerHTML = `<img src="${item.imageSrc}" alt="${item.label}" loading="lazy"><span class="mosaic-label">${item.label}</span>`;
+              } else if (item.iconSvg) {
+                div.innerHTML = `<div class="mosaic-icon-overlay">${item.iconSvg}<span>${item.label}</span></div><span class="mosaic-label">${item.label}</span>`;
+              } else {
+                div.innerHTML = `<span class="mosaic-label">${item.label}</span>`;
+              }
+              grid.appendChild(div);
+            });
+          } catch (err) { console.error('Failed to load mosaic', err); }
+        });
+      </script>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       9. CALL TO ACTION BANNER
+  ═══════════════════════════════════════════════════════════ -->
+  <section class="cta-section dark-section" aria-labelledby="cta-heading">
+    <div class="section-wrap narrow" style="padding-top:110px; padding-bottom:110px;">
+      <span class="sec-label reveal">New Here?</span>
+      <h2 class="reveal reveal-delay-1" id="cta-heading">We&rsquo;d <em>love</em> to meet you.</h2>
+      <p class="reveal reveal-delay-2">Come as you are. There is a seat for you at Noah's Ark. Our doors open every Sunday from 9:00 AM.</p>
+      <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;" class="reveal reveal-delay-3">
+        <a href="location.html" class="btn btn-gold">
+          <i class="fas fa-map-marker-alt"></i> Find Us
+        </a>
+        <a href="worship.html" class="btn btn-ghost">
+          View Service Times
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <div id="footer"></div>
+
+</body>
+</html>

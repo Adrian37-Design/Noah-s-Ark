@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diocese | Noah's Ark Fairview</title>
+  <link rel="icon" href="logo_new.png">
+  <meta name="description" content="Noah's Ark Fairview is a proud member of the Anglican Diocese of Harare. Learn about our wider diocesan connection and the Bishop.">
+  <meta name="keywords" content="Anglican Diocese Harare, Church of the Province of Central Africa, Zimbabwe Anglican Church">
+  <meta property="og:title"       content="Diocese | Noah's Ark Fairview">
+  <meta property="og:description" content="Our connection to the wider Anglican Diocese of Harare.">
+  <meta property="og:image"       content="logo_new.png">
+
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="global.css">
+  <script src="components.js" defer></script>
+  <script src="animations.js" defer></script>
+</head>
+<body>
+
+  <div id="navbar"></div>
+
+  <div class="page-hero" style="position:relative; overflow:hidden;">
+    <div class="bubbles">
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <h1 class="reveal" style="position:relative; z-index:1;">Diocese</h1>
+    <p class="reveal reveal-delay-1" style="position:relative; z-index:1;">Part of something greater — the Anglican Diocese of Harare.</p>
+    <style>
+      .bubbles { position:absolute; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; overflow:hidden; }
+      .bubbles span { position:absolute; bottom:-50px; width:20px; height:20px; background:rgba(212,175,55,0.25); border-radius:50%; animation:bubble 12s infinite ease-in; }
+      .bubbles span:nth-child(1) { left:5%; width:40px; height:40px; animation-duration:10s; animation-delay:0s; }
+      .bubbles span:nth-child(2) { left:15%; width:25px; height:25px; animation-duration:14s; animation-delay:1s; }
+      .bubbles span:nth-child(3) { left:25%; width:50px; height:50px; animation-duration:9s; animation-delay:2s; }
+      .bubbles span:nth-child(4) { left:35%; width:15px; height:15px; animation-duration:16s; animation-delay:0.5s; }
+      .bubbles span:nth-child(5) { left:45%; width:35px; height:35px; animation-duration:11s; animation-delay:3s; }
+      .bubbles span:nth-child(6) { left:55%; width:20px; height:20px; animation-duration:13s; animation-delay:1.5s; }
+      .bubbles span:nth-child(7) { left:65%; width:45px; height:45px; animation-duration:10s; animation-delay:4s; }
+      .bubbles span:nth-child(8) { left:75%; width:30px; height:30px; animation-duration:15s; animation-delay:2.5s; }
+      .bubbles span:nth-child(9) { left:85%; width:18px; height:18px; animation-duration:12s; animation-delay:0.8s; }
+      .bubbles span:nth-child(10) { left:95%; width:40px; height:40px; animation-duration:9s; animation-delay:3.5s; }
+      @keyframes bubble {
+        0% { transform:translateY(0) translateX(0); opacity:0.6; }
+        50% { opacity:0.3; }
+        100% { transform:translateY(-120vh) translateX(-50px); opacity:0; }
+      }
+    </style>
+  </div>
+
+  <main class="page-content">
+
+    <div class="grid-2" style="align-items:start; gap:3rem; margin-bottom: 4rem;">
+
+      <!-- LEFT: Diocese info -->
+      <div class="reveal-left">
+        <div class="sec-head">
+          <span class="sec-label">Our Connection</span>
+          <h2 class="sec-title">The Anglican Diocese of Harare</h2>
+          <div class="sec-divider"></div>
+        </div>
+        <p style="margin-top:1.5rem; font-size:1rem; color:var(--gray); line-height:1.8;">
+          Noah's Ark Anglican Church is a parish of the <strong>Anglican Diocese of Harare</strong>, part of the <em>Church of the Province of Central Africa</em> (CPCA). The Diocese encompasses Anglican parishes across Harare and surrounds, united in worship, mission, and fellowship.
+        </p>
+        <p style="margin-top:1rem; font-size:1rem; color:var(--gray); line-height:1.8;">
+          As an Anglican parish, we hold to the historic Christian faith as expressed in the <em>Apostles' Creed</em> and the <em>Nicene Creed</em>, rooted in scripture, shaped by tradition, and responsive to the Holy Spirit.
+        </p>
+
+        <div class="alert-box" style="margin-top:2rem;">
+          <h4><i class="fas fa-church" style="margin-right:0.5rem;"></i> The Province of Central Africa</h4>
+          <p>The CPCA is a member province of the worldwide Anglican Communion, linking millions of Christians across Zimbabwe, Zambia, Botswana, and Malawi in a common faith and mission.</p>
+        </div>
+      </div>
+
+      <!-- RIGHT: Bishop + Links -->
+      <div class="reveal-right">
+        <div class="sec-head">
+          <span class="sec-label">Leadership</span>
+          <h2 class="sec-title" style="font-size:clamp(1.5rem,3vw,2.2rem);">The Bishop of Harare</h2>
+          <div class="sec-divider"></div>
+        </div>
+
+        <div class="card gold-top" style="margin-top:1.5rem; text-align:center; padding:2.5rem;">
+          <div class="leader-avatar" style="font-size:1.5rem;">&#9768;</div>
+          <h4 id="bishop-name" style="font-family:var(--font-heading); font-size:1.6rem; color:var(--navy-dark); margin-top:1rem; letter-spacing:0.02em;">The Rt. Rev. Bishop of Harare</h4>
+          <p style="color:var(--gold-dark); font-size:0.85rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; margin-top:4px;">Anglican Diocese of Harare</p>
+          <p style="color:var(--gray); font-size:0.9rem; margin-top:1rem; line-height:1.7;">Shepherd of the Diocese and overseer of all parishes within the Anglican Diocese of Harare.</p>
+        </div>
+
+        <script>
+          (async function() {
+            try {
+              const res = await fetch('/api/diocese');
+              if (res.ok) {
+                const data = await res.json();
+                if (data.bishopName) {
+                  document.getElementById('bishop-name').textContent = data.bishopName;
+                }
+              }
+            } catch (e) { /* fallback keeps default */ }
+          })();
+        </script>
+
+
+      </div>
+    </div>
+
+    <!-- WHAT MAKES US ANGLICAN -->
+    <section aria-labelledby="anglican-heading">
+      <div class="sec-head reveal" style="text-align:center;">
+        <span class="sec-label">Our Tradition</span>
+        <h2 class="sec-title gold-line" id="anglican-heading">What Makes Us Anglican?</h2>
+        <div class="sec-divider" style="margin:14px auto 0;"></div>
+      </div>
+      <div class="grid-3 stagger-group" style="margin-top:3rem;">
+        <div class="card gold-top stagger-item">
+          <h3><i class="fas fa-bible" style="color:var(--gold); margin-right:0.5rem;"></i> Scripture</h3>
+          <p>The Holy Bible is the inspired Word of God and the supreme authority for all matters of faith and conduct.</p>
+        </div>
+        <div class="card gold-top stagger-item">
+          <h3><i class="fas fa-history" style="color:var(--gold); margin-right:0.5rem;"></i> Tradition</h3>
+          <p>We are heirs to 2,000 years of Christian history, shaped by the creedal faith of the undivided Church.</p>
+        </div>
+        <div class="card gold-top stagger-item">
+          <h3><i class="fas fa-brain" style="color:var(--gold); margin-right:0.5rem;"></i> Reason</h3>
+          <p>Anglicanism holds scripture, tradition, and reason together — thinking carefully about faith and life in the world.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="footer"></div>
+
+</body>
+</html>
