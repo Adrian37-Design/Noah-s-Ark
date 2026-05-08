@@ -312,10 +312,16 @@
             const grid = document.getElementById('mosaic-grid');
             grid.innerHTML = '';
             items.forEach(item => {
+              if (!item.imageSrc && !item.iconSvg) return; // skip empty tiles
               const div = document.createElement('div');
               div.className = 'mosaic-item' + (item.tall ? ' mosaic-tall' : '') + (item.bgClass ? ' ' + item.bgClass : '');
-              if (item.imageSrc) {
-                div.innerHTML = `<img src="${item.imageSrc}" alt="${item.label}" loading="lazy"><span class="mosaic-label">${item.label}</span>`;
+              // Build full URL if imageSrc is a relative path
+              let imgSrc = item.imageSrc || '';
+              if (imgSrc && !imgSrc.startsWith('http')) {
+                imgSrc = `https://raw.githubusercontent.com/Adrian37-Design/Noah-s-Ark/main/${imgSrc}`;
+              }
+              if (imgSrc) {
+                div.innerHTML = `<img src="${imgSrc}" alt="${item.label}" loading="lazy"><span class="mosaic-label">${item.label}</span>`;
               } else if (item.iconSvg) {
                 div.innerHTML = `<div class="mosaic-icon-overlay">${item.iconSvg}<span>${item.label}</span></div><span class="mosaic-label">${item.label}</span>`;
               } else {
