@@ -272,7 +272,7 @@ app.post('/api/upload', async (req, res) => {
       { message: `Upload image: ${safeName}`, content: base64, branch: GH_BRANCH }
     );
     if (ghRes.content) {
-      const url = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${safeName}`;
+      const url = `https://cdn.jsdelivr.net/gh/${GH_OWNER}/${GH_REPO}@${GH_BRANCH}/${safeName}`;
       res.json({ success: true, filename: safeName, url });
     } else {
       res.status(500).json({ error: ghRes.message || 'GitHub upload failed' });
