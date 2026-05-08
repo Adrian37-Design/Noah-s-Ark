@@ -30,15 +30,6 @@ const db = admin.firestore();
 app.use(cors());
 app.use(express.static(__dirname));
 
-// DEBUG endpoint — remove after fixing
-app.all('/api/debug', (req, res) => {
-  res.json({
-    method: req.method,
-    body: req.body,
-    bodyType: typeof req.body,
-    contentType: req.headers['content-type'] || 'none'
-  });
-});
 
 
 // ========================
@@ -229,6 +220,15 @@ app.post('/api/mosaic/update', async (req, res) => {
     const { items } = req.body;
     await db.collection('settings').doc('mosaic').set({ items }, { merge: true });
     res.json({ success: true, items });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Admin fetch for mosaic (called on dashboard load)
+app.post('/api/admin/mosaic', async (req, res) => {
+  if (req.body.password !== ADMIN_PASSWORD) return res.status(401).json({ error: 'Unauthorized' });
+  try {
+    const doc = await db.collection('settings').doc('mosaic').get();
+    res.json(doc.exists ? doc.data().items || [] : []);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
