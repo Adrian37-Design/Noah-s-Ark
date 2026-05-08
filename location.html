@@ -600,13 +600,23 @@
               <th>Service</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td>9:00 AM</td>
-              <td>Holy Eucharist — Choir &amp; Shona</td>
-            </tr>
+          <tbody id="loc-srv-body">
+            <tr><td colspan="2" style="color:rgba(255,255,255,0.4);">Loading…</td></tr>
           </tbody>
         </table>
+        <script>
+          fetch('/api/services').then(r => r.json()).then(arr => {
+            const body = document.getElementById('loc-srv-body');
+            if (!arr || arr.length === 0) {
+              body.innerHTML = '<tr><td colspan="2" style="color:rgba(255,255,255,0.5);">No services scheduled.</td></tr>';
+              return;
+            }
+            body.innerHTML = arr.map(a => `<tr><td>${a.time}</td><td>${a.name}</td></tr>`).join('');
+          }).catch(() => {
+            document.getElementById('loc-srv-body').innerHTML =
+              '<tr><td colspan="2" style="color:rgba(255,255,255,0.5);">Could not load services.</td></tr>';
+          });
+        </script>
 
         <div class="alert-box" style="margin-top: 2rem;">
           <h4><i class="fas fa-info-circle" style="margin-right:0.5rem;"></i> Parking &amp; Access</h4>
