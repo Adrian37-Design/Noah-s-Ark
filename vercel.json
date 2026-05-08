@@ -4,28 +4,9 @@
     {
       "src": "server.js",
       "use": "@vercel/node"
-    },
-    {
-      "src": "**/*.{html,css,js,json,png,jpg,jpeg,svg,ico,woff,woff2,ttf,gif,webp}",
-      "use": "@vercel/static",
-      "config": {
-        "excludeFiles": "server.js"
-      }
     }
   ],
   "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/server.js"
-    },
-    {
-      "src": "/(.+\\.(css|js|png|jpg|jpeg|svg|ico|woff|woff2|ttf|gif|webp))",
-      "dest": "/$1"
-    },
-    {
-      "src": "/(.*)\\.html",
-      "dest": "/$1.html"
-    },
     {
       "src": "/(.*)",
       "dest": "/server.js"
