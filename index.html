@@ -1,23 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Noah's Ark Fairview | A Community of Faith</title>
   <link rel="icon" href="logo_new.png">
-  <meta name="description" content="Welcome to Noah's Ark Anglican Church, Fairview — a vibrant community of faith, worship, and service. Join us every Sunday.">
-  <meta name="keywords" content="Noah's Ark Fairview, Anglican Church Harare, Sunday Worship, Christian Community Zimbabwe">
-  <meta property="og:title"       content="Noah's Ark Fairview | A Community of Faith">
+  <meta name="description"
+    content="Welcome to Noah's Ark Anglican Church, Fairview — a vibrant community of faith, worship, and service. Join us every Sunday.">
+  <meta name="keywords"
+    content="Noah's Ark Fairview, Anglican Church Harare, Sunday Worship, Christian Community Zimbabwe">
+  <meta property="og:title" content="Noah's Ark Fairview | A Community of Faith">
   <meta property="og:description" content="Where faith finds a home and community truly begins.">
-  <meta property="og:image"       content="logo_new.png">
-  <meta property="og:type"        content="website">
+  <meta property="og:image" content="logo_new.png">
+  <meta property="og:type" content="website">
 
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link rel="stylesheet" href="global.css">
-  <script src="components.js"  defer></script>
-  <script src="animations.js"  defer></script>
+  <script src="components.js" defer></script>
+  <script src="animations.js" defer></script>
 </head>
+
 <body>
 
   <!-- NAVBAR -->
@@ -53,7 +59,8 @@
     <div class="ticker-track" aria-hidden="true">
       <span>&ldquo;For I know the plans I have for you...&rdquo; &mdash; <strong>Jeremiah 29:11</strong></span>
       <span class="ticker-separator">&#10022;</span>
-      <span>&ldquo;I can do all things through Christ who strengthens me.&rdquo; &mdash; <strong>Philippians 4:13</strong></span>
+      <span>&ldquo;I can do all things through Christ who strengthens me.&rdquo; &mdash; <strong>Philippians
+          4:13</strong></span>
       <span class="ticker-separator">&#10022;</span>
       <span>&ldquo;The Lord is my shepherd; I shall not want.&rdquo; &mdash; <strong>Psalm 23:1</strong></span>
       <span class="ticker-separator">&#10022;</span>
@@ -64,7 +71,8 @@
       <!-- Duplicate for seamless loop -->
       <span>&ldquo;For I know the plans I have for you...&rdquo; &mdash; <strong>Jeremiah 29:11</strong></span>
       <span class="ticker-separator">&#10022;</span>
-      <span>&ldquo;I can do all things through Christ who strengthens me.&rdquo; &mdash; <strong>Philippians 4:13</strong></span>
+      <span>&ldquo;I can do all things through Christ who strengthens me.&rdquo; &mdash; <strong>Philippians
+          4:13</strong></span>
       <span class="ticker-separator">&#10022;</span>
       <span>&ldquo;The Lord is my shepherd; I shall not want.&rdquo; &mdash; <strong>Psalm 23:1</strong></span>
       <span class="ticker-separator">&#10022;</span>
@@ -86,7 +94,8 @@
         <div class="sec-divider" style="margin:14px auto 0;"></div>
       </div>
       <div class="service-times-grid stagger-group" id="home-dynamic-srv">
-        <p style="color:rgba(255,255,255,0.5); text-align:center; width:100%; grid-column:1/-1;">Loading schedules...</p>
+        <p style="color:rgba(255,255,255,0.5); text-align:center; width:100%; grid-column:1/-1;">Loading schedules...
+        </p>
       </div>
       <script>
         document.addEventListener('DOMContentLoaded', async () => {
@@ -103,7 +112,7 @@
                 html += `<div class="service-card stagger-item"><span class="service-icon"><i class="${s.icon}"></i></span><span class="service-time">${s.time}</span><span class="service-name">${s.name}</span></div>`;
               });
               grid.innerHTML = html;
-              
+
               if (window.IntersectionObserver) {
                 const obs = new IntersectionObserver(entries => {
                   entries.forEach(e => {
@@ -140,7 +149,7 @@
         <span class="stat-label">Congregation Members</span>
       </div>
       <div class="stat-item reveal reveal-delay-2">
-        <span class="stat-number" data-count="12" data-suffix="">0</span>
+        <span class="stat-number" data-count="4" data-suffix="">0</span>
         <span class="stat-label">Active Ministries</span>
       </div>
       <div class="stat-item reveal reveal-delay-3">
@@ -157,7 +166,8 @@
     <div class="section-wrap narrow" style="text-align:center;">
       <span class="sec-label reveal" id="welcome-heading">A Word from Our Priest</span>
       <blockquote class="pastor-quote reveal reveal-delay-1">
-        <p>&ldquo;We are more than a congregation &mdash; we are a family, built on faith, bound by love, and called to serve our community with joy and purpose. All are truly welcome here.&rdquo;</p>
+        <p>&ldquo;We are more than a congregation &mdash; we are a family, built on faith, bound by love, and called to
+          serve our community with joy and purpose. All are truly welcome here.&rdquo;</p>
         <footer id="priest-name">Ven. Dr. E. Katsande &mdash; Priest-in-Charge</footer>
       </blockquote>
     </div>
@@ -191,21 +201,33 @@
       <div class="grid-3 stagger-group" style="margin-top:0;">
         <div class="pillar-card stagger-item">
           <div class="pillar-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="9" x2="22" y2="9"/></svg>
+            <svg viewBox="0 0 24 24">
+              <line x1="12" y1="2" x2="12" y2="22" />
+              <line x1="2" y1="9" x2="22" y2="9" />
+            </svg>
           </div>
           <h3>Worship</h3>
-          <p>We gather every Sunday to encounter the living God through prayer, scripture, song, and the Holy Eucharist.</p>
+          <p>We gather every Sunday to encounter the living God through prayer, scripture, song, and the Holy Eucharist.
+          </p>
         </div>
         <div class="pillar-card stagger-item">
           <div class="pillar-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <svg viewBox="0 0 24 24">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
           </div>
           <h3>Community</h3>
           <p>From youth groups to senior circles, there is a place for every soul in our growing parish family.</p>
         </div>
         <div class="pillar-card stagger-item">
           <div class="pillar-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z" />
+            </svg>
           </div>
           <h3>Outreach</h3>
           <p>Dedicated to serving Fairview and beyond through community support, compassion, and action.</p>
@@ -219,7 +241,8 @@
   ═══════════════════════════════════════════════════════════ -->
   <section aria-labelledby="events-heading" style="background: var(--cream);">
     <div class="section-wrap">
-      <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:2.5rem; flex-wrap:wrap; gap:1rem;">
+      <div
+        style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:2.5rem; flex-wrap:wrap; gap:1rem;">
         <div class="sec-head" style="margin-bottom:0;">
           <span class="sec-label">Coming Up</span>
           <h2 class="sec-title reveal" id="events-heading">Upcoming Events</h2>
@@ -236,7 +259,7 @@
           try {
             const res = await fetch('/api/events');
             const events = await res.json();
-            
+
             if (events.length === 0) {
               grid.innerHTML = '<p style="color:rgba(0,0,0,0.5);">No upcoming events.</p>';
               return;
@@ -250,7 +273,7 @@
               const evDate = new Date(ev.date + 'T12:00:00');
               const day = evDate.getDate();
               const month = evDate.toLocaleDateString('en-GB', { month: 'short' });
-              
+
               html += `
                 <a href="events.html" class="event-date-card stagger-item" style="text-decoration:none;">
                   <div class="event-date-badge">
@@ -342,7 +365,8 @@
     <div class="section-wrap narrow" style="padding-top:110px; padding-bottom:110px;">
       <span class="sec-label reveal">New Here?</span>
       <h2 class="reveal reveal-delay-1" id="cta-heading">We&rsquo;d <em>love</em> to meet you.</h2>
-      <p class="reveal reveal-delay-2">Come as you are. There is a seat for you at Noah's Ark. Our doors open every Sunday from 9:00 AM.</p>
+      <p class="reveal reveal-delay-2">Come as you are. There is a seat for you at Noah's Ark. Our doors open every
+        Sunday from 9:00 AM.</p>
       <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;" class="reveal reveal-delay-3">
         <a href="location.html" class="btn btn-gold">
           <i class="fas fa-map-marker-alt"></i> Find Us
@@ -358,4 +382,5 @@
   <div id="footer"></div>
 
 </body>
+
 </html>
