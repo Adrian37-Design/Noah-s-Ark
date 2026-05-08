@@ -1,8 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const bodyParser = require('body-parser');
-const serverless = require('serverless-http');
 const admin = require('firebase-admin');
 
 const app = express();
@@ -17,7 +15,6 @@ if (!admin.apps.length) {
     credential: admin.credential.cert({
       projectId: process.env.FIREBASE_PROJECT_ID,
       clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      // Vercel stores multiline env vars with escaped \n — this restores them
       privateKey: process.env.FIREBASE_PRIVATE_KEY
         ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
         : undefined,
@@ -31,21 +28,6 @@ const db = admin.firestore();
 // MIDDLEWARE
 // ========================
 app.use(cors());
-app.use(bodyParser.json({ limit: '10mb' }));
-app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
-
-// Fallback: manually parse body if body-parser didn't catch it
-app.use((req, res, next) => {
-  if (req.body !== undefined) return next();
-  const chunks = [];
-  req.on('data', c => chunks.push(c));
-  req.on('end', () => {
-    try { req.body = JSON.parse(Buffer.concat(chunks).toString()); }
-    catch (e) { req.body = {}; }
-    next();
-  });
-});
-
 app.use(express.static(__dirname));
 
 // DEBUG endpoint — remove after fixing
@@ -274,9 +256,25 @@ app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// For local development
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
 
-// Wrap with serverless-http for Vercel body parsing compatibility
-module.exports = serverless(app);
+// Vercel export: manually read body stream before Express (bypasses Content-Length stripping)
+module.exports = async (req, res) => {
+  if (req.method !== 'GET' && req.method !== 'HEAD') {
+    await new Promise((resolve) => {
+      const chunks = [];
+      req.on('data', c => chunks.push(c));
+      req.on('end', () => {
+        const raw = Buffer.concat(chunks).toString();
+        try { req.body = raw ? JSON.parse(raw) : {}; }
+        catch (e) { req.body = {}; }
+        resolve();
+      });
+      req.on('error', () => { req.body = {}; resolve(); });
+    });
+  }
+  app(req, res);
+};
