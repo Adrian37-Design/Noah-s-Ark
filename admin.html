@@ -446,6 +446,15 @@
       });
       if (mRes.ok) {
         globalMosaic = await mRes.json();
+        // Always show 5 tile slots — initialize empty ones if none exist
+        if (!Array.isArray(globalMosaic) || globalMosaic.length === 0) {
+          globalMosaic = Array.from({ length: 5 }, () => ({ label: '', imageSrc: '', tall: false }));
+        } else {
+          // Pad to 5 if fewer tiles exist
+          while (globalMosaic.length < 5) {
+            globalMosaic.push({ label: '', imageSrc: '', tall: false });
+          }
+        }
         renderMosaicAdmin(globalMosaic);
       }
     }
