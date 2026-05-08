@@ -25,6 +25,28 @@ if (!admin.apps.length) {
 const db = admin.firestore();
 
 // ========================
+// GITHUB IMAGE STORAGE
+// ========================
+const GH_OWNER  = 'Adrian37-Design';
+const GH_REPO   = 'Noah-s-Ark';
+const GH_BRANCH = 'main';
+const GH_API    = 'https://api.github.com';
+
+async function ghFetch(path, method, body) {
+  const res = await fetch(`${GH_API}${path}`, {
+    method,
+    headers: {
+      Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+      'Content-Type': 'application/json',
+      'User-Agent': 'Noah-s-Ark-Server',
+      'X-GitHub-Api-Version': '2022-11-28'
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  return res.json();
+}
+
+// ========================
 // MIDDLEWARE
 // ========================
 app.use(cors());
@@ -233,20 +255,47 @@ app.post('/api/admin/mosaic', async (req, res) => {
 });
 
 // ========================
-// IMAGE UPLOAD (base64)
+// IMAGE UPLOAD → GitHub Repo
 // ========================
-const fs = require('fs');
-app.post('/api/upload', (req, res) => {
+app.post('/api/upload', async (req, res) => {
   const { password, filename, data } = req.body;
   if (password !== ADMIN_PASSWORD) return res.status(401).json({ error: 'Unauthorized' });
   if (!filename || !data) return res.status(400).json({ error: 'Missing filename or data' });
   try {
     const base64 = data.replace(/^data:image\/\w+;base64,/, '');
-    const buffer = Buffer.from(base64, 'base64');
-    const safeName = path.basename(filename).replace(/[^a-zA-Z0-9._-]/g, '_');
-    fs.writeFileSync(path.join(__dirname, safeName), buffer);
-    res.json({ success: true, filename: safeName });
-  } catch (err) { res.status(500).json({ error: 'Upload failed on this platform' }); }
+    const ext = path.extname(filename) || '.jpg';
+    const safeName = `images/${Date.now()}_${path.basename(filename).replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+    // Commit image to GitHub repo
+    const ghRes = await ghFetch(
+      `/repos/${GH_OWNER}/${GH_REPO}/contents/${safeName}`,
+      'PUT',
+      { message: `Upload image: ${safeName}`, content: base64, branch: GH_BRANCH }
+    );
+    if (ghRes.content) {
+      const url = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${safeName}`;
+      res.json({ success: true, filename: safeName, url });
+    } else {
+      res.status(500).json({ error: ghRes.message || 'GitHub upload failed' });
+    }
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// DELETE image from GitHub repo
+app.post('/api/upload/delete', async (req, res) => {
+  const { password, filename } = req.body;
+  if (password !== ADMIN_PASSWORD) return res.status(401).json({ error: 'Unauthorized' });
+  if (!filename) return res.status(400).json({ error: 'Missing filename' });
+  try {
+    // Get the file SHA first (required by GitHub API to delete)
+    const fileInfo = await ghFetch(`/repos/${GH_OWNER}/${GH_REPO}/contents/${filename}?ref=${GH_BRANCH}`, 'GET');
+    if (!fileInfo.sha) return res.status(404).json({ error: 'File not found on GitHub' });
+    await ghFetch(
+      `/repos/${GH_OWNER}/${GH_REPO}/contents/${filename}`,
+      'DELETE',
+      { message: `Delete image: ${filename}`, sha: fileInfo.sha, branch: GH_BRANCH }
+    );
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // ========================
