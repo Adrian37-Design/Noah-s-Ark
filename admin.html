@@ -422,6 +422,8 @@
     }
 
     async function fetchAllData() {
+      const currentScroll = window.scrollY;
+
       // Fetch Events
       let res = await fetch('/api/admin/events', {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: currentPassword })
@@ -477,6 +479,9 @@
         }
         renderMosaicAdmin(globalMosaic);
       }
+
+      // Restore scroll position after all rendering is complete
+      setTimeout(() => window.scrollTo(0, currentScroll), 10);
     }
 
     // ==========================================
