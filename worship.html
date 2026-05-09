@@ -209,9 +209,22 @@
 
         if (rScr.ok) {
           const arr = await rScr.json();
+          const thisWeek = arr.filter(a => !a.week || a.week === 'this');
+          const nextWeek = arr.filter(a => a.week === 'next');
+          
           let html = '';
-          arr.forEach((a, i) => html += `<div class="reading-row" ${i === arr.length - 1 ? 'style="border-bottom:none;"' : ''}><div class="rr-badge">${a.badge}</div><div class="rr-ref">${a.reference}</div><div class="rr-reader">${a.reader}</div></div>`);
-          if (arr.length === 0) html = '<p style="color:var(--gray-light); padding:10px 0;">No scriptures available.</p>';
+          if (arr.length === 0) {
+            html = '<p style="color:var(--gray-light); padding:10px 0;">No scriptures available.</p>';
+          } else {
+            if (thisWeek.length > 0) {
+              html += '<h4 style="margin-top:0.5rem; margin-bottom:0.5rem; font-size:0.85rem; color:var(--gold); text-transform:uppercase; letter-spacing:0.05em;">This Week</h4>';
+              thisWeek.forEach((a, i) => html += `<div class="reading-row" ${i === thisWeek.length - 1 && nextWeek.length === 0 ? 'style="border-bottom:none;"' : ''}><div class="rr-badge">${a.badge || ''}</div><div class="rr-ref">${a.reference || ''}</div><div class="rr-reader">${a.reader || ''}</div></div>`);
+            }
+            if (nextWeek.length > 0) {
+              html += '<h4 style="margin-top:1.5rem; margin-bottom:0.5rem; font-size:0.85rem; color:var(--gold); text-transform:uppercase; letter-spacing:0.05em;">Next Week</h4>';
+              nextWeek.forEach((a, i) => html += `<div class="reading-row" ${i === nextWeek.length - 1 ? 'style="border-bottom:none;"' : ''}><div class="rr-badge">${a.badge || ''}</div><div class="rr-ref">${a.reference || ''}</div><div class="rr-reader">${a.reader || ''}</div></div>`);
+            }
+          }
           document.getElementById('dyn-scr').innerHTML = html;
         }
 

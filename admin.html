@@ -242,15 +242,25 @@
           <h2 id="scr-form-title">Add Scripture</h2>
           <form id="scr-form" onsubmit="saveScr(event)">
             <input type="hidden" id="scr-id">
-            <div class="input-group"><label>Badge (e.g. 1ST, Psalm)</label><input type="text" id="scr-badge" required></div>
-            <div class="input-group"><label>Reference (e.g. Proverbs 31:10)</label><input type="text" id="scr-ref" required></div>
-            <div class="input-group"><label>Reader Name</label><input type="text" id="scr-reader" required></div>
+            <div class="input-group">
+              <label>Week</label>
+              <select id="scr-week">
+                <option value="this">This Week</option>
+                <option value="next">Next Week</option>
+              </select>
+            </div>
+            <div class="input-group"><label>Badge (e.g. 1ST, Psalm)</label><input type="text" id="scr-badge"></div>
+            <div class="input-group"><label>Reference (e.g. Proverbs 31:10)</label><input type="text" id="scr-ref"></div>
+            <div class="input-group"><label>Reader Name</label><input type="text" id="scr-reader"></div>
             <div style="display:flex; gap:10px;"><button type="submit" class="btn" id="scr-btn">Save</button><button type="button" class="btn btn-outline" id="scr-cancel-btn" style="display:none;" onclick="document.getElementById('scr-form').reset(); document.getElementById('scr-id').value=''; document.getElementById('scr-form-title').innerText='Add Scripture'; document.getElementById('scr-btn').innerText='Save'; this.style.display='none';">Cancel</button></div>
           </form>
         </div>
         <div class="panel">
           <h2>Scripture Readings</h2>
-          <div class="event-list" id="scr-list"><p style="color:gray;">Loading...</p></div>
+          <h3 style="margin-top: 1rem; color: var(--gold); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">This Week's Readings</h3>
+          <div class="event-list" id="scr-list-this"><p style="color:gray;">Loading...</p></div>
+          <h3 style="margin-top: 2rem; color: var(--gold); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">Next Week's Readings</h3>
+          <div class="event-list" id="scr-list-next"><p style="color:gray;">Loading...</p></div>
         </div>
       </div>
     </div>
@@ -649,26 +659,48 @@
 
     // SCRIPTURES
     function renderScriptures(data) {
-      const list = document.getElementById('scr-list');
-      list.innerHTML = '';
-      if (data.length === 0) return list.innerHTML = '<p style="color:gray;">No scriptures.</p>';
-      data.forEach(n => {
+      const listThis = document.getElementById('scr-list-this');
+      const listNext = document.getElementById('scr-list-next');
+      listThis.innerHTML = '';
+      listNext.innerHTML = '';
+
+      const thisWeekData = data.filter(n => !n.week || n.week === 'this');
+      const nextWeekData = data.filter(n => n.week === 'next');
+
+      if (thisWeekData.length === 0) listThis.innerHTML = '<p style="color:gray;">No scriptures.</p>';
+      if (nextWeekData.length === 0) listNext.innerHTML = '<p style="color:gray;">No scriptures.</p>';
+
+      const createItem = (n) => {
         const div = document.createElement('div'); div.className = 'event-item'; div.style.borderLeftColor = 'var(--gold-light)';
-        div.innerHTML = `<div class="event-info"><h4>${n.badge}: ${n.reference}</h4><p>Reader: ${n.reader}</p></div>
+        div.innerHTML = `<div class="event-info"><h4>${n.badge || ''}: ${n.reference || ''}</h4><p>Reader: ${n.reader || 'N/A'}</p></div>
         <div class="event-actions"><button class="btn-edit" onclick="editScr('${n.id}')"><i class="fas fa-edit"></i></button><button class="btn-delete" onclick="deleteGeneric('scriptures','${n.id}')"><i class="fas fa-trash-alt"></i></button></div>`;
-        list.appendChild(div);
-      });
+        return div;
+      };
+
+      thisWeekData.forEach(n => listThis.appendChild(createItem(n)));
+      nextWeekData.forEach(n => listNext.appendChild(createItem(n)));
     }
     async function saveScr(e) {
       e.preventDefault();
-      saveGeneric('scriptures', { id: document.getElementById('scr-id').value || undefined, badge: document.getElementById('scr-badge').value, reference: document.getElementById('scr-ref').value, reader: document.getElementById('scr-reader').value }, () => {
+      saveGeneric('scriptures', { 
+        id: document.getElementById('scr-id').value || undefined, 
+        week: document.getElementById('scr-week').value,
+        badge: document.getElementById('scr-badge').value, 
+        reference: document.getElementById('scr-ref').value, 
+        reader: document.getElementById('scr-reader').value 
+      }, () => {
         document.getElementById('scr-form').reset(); document.getElementById('scr-id').value = '';
+        document.getElementById('scr-week').value = 'this';
         document.getElementById('scr-form-title').innerText = 'Add Scripture'; document.getElementById('scr-btn').innerText = 'Save'; document.getElementById('scr-cancel-btn').style.display='none';
       });
     }
     function editScr(id) {
       const n = globalScriptures.find(e => e.id === id); if(!n) return;
-      document.getElementById('scr-id').value = n.id; document.getElementById('scr-badge').value = n.badge; document.getElementById('scr-ref').value = n.reference; document.getElementById('scr-reader').value = n.reader;
+      document.getElementById('scr-id').value = n.id; 
+      document.getElementById('scr-week').value = n.week || 'this';
+      document.getElementById('scr-badge').value = n.badge || ''; 
+      document.getElementById('scr-ref').value = n.reference || ''; 
+      document.getElementById('scr-reader').value = n.reader || '';
       document.getElementById('scr-form-title').innerText = 'Edit Scripture'; document.getElementById('scr-btn').innerText = 'Update'; document.getElementById('scr-cancel-btn').style.display='block';
     }
 
@@ -784,9 +816,11 @@
           });
           const result = await res.json();
           if (result.success) {
-            document.getElementById(`mos-img-${index}`).value = result.filename;
-            info.textContent = 'Uploaded: ' + result.filename;
-            globalMosaic[index].imageSrc = result.filename;
+            // Store the full public URL from Firebase Storage
+            const imageUrl = result.url || result.filename;
+            document.getElementById(`mos-img-${index}`).value = imageUrl;
+            info.textContent = 'Uploaded ✓';
+            globalMosaic[index].imageSrc = imageUrl;
             updateMosaicPreview(globalMosaic);
           } else {
             info.textContent = 'Upload failed.';
