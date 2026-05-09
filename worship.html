@@ -213,6 +213,11 @@
           const offThis = offData.filter(a => (!a.week || a.week === 'this') && isWorshipRole(a));
           const offNext = offData.filter(a => a.week === 'next' && isWorshipRole(a));
 
+          scrThis.sort((a, b) => (a.order || 0) - (b.order || 0));
+          scrNext.sort((a, b) => (a.order || 0) - (b.order || 0));
+          offThis.sort((a, b) => (a.order || 0) - (b.order || 0));
+          offNext.sort((a, b) => (a.order || 0) - (b.order || 0));
+
           function buildTable(scr, off, title) {
             if (scr.length === 0 && off.length === 0) return '';
             

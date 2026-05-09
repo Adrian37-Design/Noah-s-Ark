@@ -667,6 +667,26 @@
       } catch (err) { alert("Failed to delete."); }
     }
 
+    async function moveItemOrder(ep, list, id, dir) {
+      const idx = list.findIndex(e => e.id === id);
+      if (idx < 0) return;
+      if (dir === -1 && idx === 0) return;
+      if (dir === 1 && idx === list.length - 1) return;
+
+      const current = list[idx];
+      const target = list[idx + dir];
+      
+      const tempOrder = current.order || idx;
+      current.order = target.order !== undefined ? target.order : (idx + dir);
+      target.order = tempOrder;
+
+      try {
+        await fetch(`/api/${ep}/add`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: currentPassword, item: current }) });
+        await fetch(`/api/${ep}/add`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: currentPassword, item: target }) });
+        await fetchAllData();
+      } catch (e) { alert('Failed to move item'); }
+    }
+
     // SCRIPTURES
     function renderScriptures(data) {
       const listThis = document.getElementById('scr-list-this');
@@ -674,21 +694,49 @@
       listThis.innerHTML = '';
       listNext.innerHTML = '';
 
-      const thisWeekData = data.filter(n => !n.week || n.week === 'this');
-      const nextWeekData = data.filter(n => n.week === 'next');
+      let thisWeekData = data.filter(n => !n.week || n.week === 'this');
+      let nextWeekData = data.filter(n => n.week === 'next');
+
+      // Sort by order
+      thisWeekData.sort((a, b) => (a.order || 0) - (b.order || 0));
+      nextWeekData.sort((a, b) => (a.order || 0) - (b.order || 0));
 
       if (thisWeekData.length === 0) listThis.innerHTML = '<p style="color:gray;">No scriptures.</p>';
       if (nextWeekData.length === 0) listNext.innerHTML = '<p style="color:gray;">No scriptures.</p>';
 
-      const createItem = (n) => {
-        const div = document.createElement('div'); div.className = 'event-item'; div.style.borderLeftColor = 'var(--gold-light)';
-        div.innerHTML = `<div class="event-info"><h4>${n.badge || ''}: ${n.reference || ''}</h4><p>Reader: ${n.reader || 'N/A'}</p></div>
-        <div class="event-actions"><button class="btn-edit" onclick="editScr('${n.id}')"><i class="fas fa-edit"></i></button><button class="btn-delete" onclick="deleteGeneric('scriptures','${n.id}')"><i class="fas fa-trash-alt"></i></button></div>`;
-        return div;
+      const buildTable = (list, container) => {
+        if (list.length === 0) return;
+        const table = document.createElement('table');
+        table.className = 'sched-table';
+        table.style.width = '100%'; table.style.marginBottom = '1rem';
+        table.innerHTML = `<thead><tr><th>Readings Preview</th><th>Reader</th><th style="width:120px; text-align:right;">Actions</th></tr></thead><tbody></tbody>`;
+        const tbody = table.querySelector('tbody');
+
+        list.forEach((n, idx) => {
+          const tr = document.createElement('tr');
+          let displayHtml = '';
+          if (!n.reader) {
+            displayHtml = `<td colspan="2" style="color:var(--gold); font-weight:600; text-transform:uppercase;">${n.badge || ''}: ${n.reference || ''}</td>`;
+          } else {
+            displayHtml = `<td>${n.badge ? n.badge + ': ' : ''}${n.reference || ''}</td><td>${n.reader}</td>`;
+          }
+
+          const upBtn = idx > 0 ? `<button class="btn-edit" onclick="moveItemOrder('scriptures', globalScriptures.filter(e => (!e.week || e.week==='this') === (!n.week || n.week==='this')).sort((a,b)=>(a.order||0)-(b.order||0)), '${n.id}', -1)" style="margin-right:2px;"><i class="fas fa-arrow-up"></i></button>` : `<button class="btn-edit" style="visibility:hidden; margin-right:2px;"><i class="fas fa-arrow-up"></i></button>`;
+          const downBtn = idx < list.length - 1 ? `<button class="btn-edit" onclick="moveItemOrder('scriptures', globalScriptures.filter(e => (!e.week || e.week==='this') === (!n.week || n.week==='this')).sort((a,b)=>(a.order||0)-(b.order||0)), '${n.id}', 1)" style="margin-right:2px;"><i class="fas fa-arrow-down"></i></button>` : `<button class="btn-edit" style="visibility:hidden; margin-right:2px;"><i class="fas fa-arrow-down"></i></button>`;
+
+          tr.innerHTML = `${displayHtml}
+          <td style="text-align:right; white-space:nowrap;">
+            ${upBtn}${downBtn}
+            <button class="btn-edit" onclick="editScr('${n.id}')" style="margin-right:2px;"><i class="fas fa-edit"></i></button>
+            <button class="btn-delete" onclick="deleteGeneric('scriptures','${n.id}')"><i class="fas fa-trash-alt"></i></button>
+          </td>`;
+          tbody.appendChild(tr);
+        });
+        container.appendChild(table);
       };
 
-      thisWeekData.forEach(n => listThis.appendChild(createItem(n)));
-      nextWeekData.forEach(n => listNext.appendChild(createItem(n)));
+      buildTable(thisWeekData, listThis);
+      buildTable(nextWeekData, listNext);
     }
     async function saveScr(e) {
       e.preventDefault();
@@ -721,21 +769,44 @@
       listThis.innerHTML = '';
       listNext.innerHTML = '';
 
-      const thisWeekData = data.filter(n => !n.week || n.week === 'this');
-      const nextWeekData = data.filter(n => n.week === 'next');
+      let thisWeekData = data.filter(n => !n.week || n.week === 'this');
+      let nextWeekData = data.filter(n => n.week === 'next');
+
+      // Sort by order
+      thisWeekData.sort((a, b) => (a.order || 0) - (b.order || 0));
+      nextWeekData.sort((a, b) => (a.order || 0) - (b.order || 0));
 
       if (thisWeekData.length === 0) listThis.innerHTML = '<p style="color:gray;">No officials.</p>';
       if (nextWeekData.length === 0) listNext.innerHTML = '<p style="color:gray;">No officials.</p>';
 
-      const createItem = (n) => {
-        const div = document.createElement('div'); div.className = 'event-item'; div.style.borderLeftColor = 'var(--crimson)';
-        div.innerHTML = `<div class="event-info"><h4>${n.name}</h4><p>${n.role}</p></div>
-        <div class="event-actions"><button class="btn-edit" onclick="editOff('${n.id}')"><i class="fas fa-edit"></i></button><button class="btn-delete" onclick="deleteGeneric('officials','${n.id}')"><i class="fas fa-trash-alt"></i></button></div>`;
-        return div;
+      const buildTable = (list, container) => {
+        if (list.length === 0) return;
+        const table = document.createElement('table');
+        table.className = 'sched-table';
+        table.style.width = '100%'; table.style.marginBottom = '1rem';
+        table.innerHTML = `<thead><tr><th>Role</th><th>Name</th><th style="width:120px; text-align:right;">Actions</th></tr></thead><tbody></tbody>`;
+        const tbody = table.querySelector('tbody');
+
+        list.forEach((n, idx) => {
+          const tr = document.createElement('tr');
+          const displayHtml = `<td>${n.role}</td><td>${n.name}</td>`;
+
+          const upBtn = idx > 0 ? `<button class="btn-edit" onclick="moveItemOrder('officials', globalOfficials.filter(e => (!e.week || e.week==='this') === (!n.week || n.week==='this')).sort((a,b)=>(a.order||0)-(b.order||0)), '${n.id}', -1)" style="margin-right:2px;"><i class="fas fa-arrow-up"></i></button>` : `<button class="btn-edit" style="visibility:hidden; margin-right:2px;"><i class="fas fa-arrow-up"></i></button>`;
+          const downBtn = idx < list.length - 1 ? `<button class="btn-edit" onclick="moveItemOrder('officials', globalOfficials.filter(e => (!e.week || e.week==='this') === (!n.week || n.week==='this')).sort((a,b)=>(a.order||0)-(b.order||0)), '${n.id}', 1)" style="margin-right:2px;"><i class="fas fa-arrow-down"></i></button>` : `<button class="btn-edit" style="visibility:hidden; margin-right:2px;"><i class="fas fa-arrow-down"></i></button>`;
+
+          tr.innerHTML = `${displayHtml}
+          <td style="text-align:right; white-space:nowrap;">
+            ${upBtn}${downBtn}
+            <button class="btn-edit" onclick="editOff('${n.id}')" style="margin-right:2px;"><i class="fas fa-edit"></i></button>
+            <button class="btn-delete" onclick="deleteGeneric('officials','${n.id}')"><i class="fas fa-trash-alt"></i></button>
+          </td>`;
+          tbody.appendChild(tr);
+        });
+        container.appendChild(table);
       };
 
-      thisWeekData.forEach(n => listThis.appendChild(createItem(n)));
-      nextWeekData.forEach(n => listNext.appendChild(createItem(n)));
+      buildTable(thisWeekData, listThis);
+      buildTable(nextWeekData, listNext);
     }
     async function saveOff(e) {
       e.preventDefault();
