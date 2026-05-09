@@ -257,6 +257,13 @@
         </div>
         <div class="panel">
           <h2>Scripture Readings</h2>
+
+          <div class="countdown-banner" style="background: rgba(255, 215, 0, 0.05); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--gold); text-align: center; margin-top: 1rem; margin-bottom: 2rem;">
+            <h3 style="color: var(--gold); font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;"><i class="fas fa-clock"></i> Automatic Week Reset</h3>
+            <div id="rollover-timer" style="font-family: monospace; font-size: 1.8rem; font-weight: 700; color: white; margin-bottom: 1rem;">Calculating...</div>
+            <button class="btn-edit" onclick="forceRollover()" style="background: transparent; border: 1px solid var(--crimson); color: var(--crimson); padding: 5px 15px; font-size: 0.8rem;">Force Reset Now</button>
+          </div>
+
           <h3 style="margin-top: 1rem; color: var(--gold); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">This Week's Readings</h3>
           <div class="event-list" id="scr-list-this"><p style="color:gray;">Loading...</p></div>
           <h3 style="margin-top: 2rem; color: var(--gold); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">Next Week's Readings</h3>
@@ -704,6 +711,57 @@
         ));
         await fetchAllData();
       } catch (e) { alert('Failed to move item'); }
+    }
+
+    // ==========================================
+    // WEEKLY ROLLOVER LOGIC
+    // ==========================================
+    function updateRolloverTimer() {
+      const now = new Date();
+      const nextSat = new Date();
+      let daysUntilSat = (6 - now.getDay() + 7) % 7;
+      
+      // If it's Saturday exactly at or past 23:59:00, target next week's Saturday
+      if (daysUntilSat === 0 && (now.getHours() > 23 || (now.getHours() === 23 && now.getMinutes() >= 59))) {
+        daysUntilSat = 7;
+      }
+      
+      nextSat.setDate(now.getDate() + daysUntilSat);
+      nextSat.setHours(23, 59, 0, 0);
+
+      const diff = nextSat - now;
+      const timerEl = document.getElementById('rollover-timer');
+      if (!timerEl) return;
+
+      if (diff <= 0) {
+        timerEl.innerText = "ROLLOVER IN PROGRESS...";
+        return;
+      }
+
+      const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const m = Math.floor((diff / 1000 / 60) % 60);
+      const s = Math.floor((diff / 1000) % 60);
+
+      timerEl.innerText = `${d}D ${h.toString().padStart(2, '0')}H ${m.toString().padStart(2, '0')}M ${s.toString().padStart(2, '0')}S`;
+    }
+    
+    setInterval(updateRolloverTimer, 1000);
+    updateRolloverTimer();
+
+    async function forceRollover() {
+      if (!confirm("WARNING: This will permanently delete 'This Week' items and automatically shift 'Next Week' to 'This Week'. Proceed?")) return;
+      try {
+        const res = await fetch(`/api/cron/rollover?key=${encodeURIComponent(currentPassword)}`);
+        if (res.ok) {
+          alert('Rollover successful! The schedule has been updated.');
+          await fetchAllData();
+        } else {
+          alert('Rollover failed. Unauthorized or server error.');
+        }
+      } catch (err) {
+        alert('Failed to execute rollover: ' + err.message);
+      }
     }
 
     // SCRIPTURES

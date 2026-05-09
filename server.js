@@ -200,6 +200,47 @@ setupCrud('officials');
 setupCrud('services');
 
 // ========================
+// CRON / AUTOMATED JOBS
+// ========================
+app.get('/api/cron/rollover', async (req, res) => {
+  const authHeader = req.headers.authorization;
+  const isVercelCron = process.env.CRON_SECRET && authHeader === `Bearer ${process.env.CRON_SECRET}`;
+  const isManualAuth = req.query.key === ADMIN_PASSWORD;
+
+  if (!isVercelCron && !isManualAuth) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  try {
+    const scriptures = await getCollection('scriptures');
+    const officials = await getCollection('officials');
+
+    const collections = [
+      { name: 'scriptures', data: scriptures },
+      { name: 'officials', data: officials }
+    ];
+
+    for (const coll of collections) {
+      for (const item of coll.data) {
+        // Delete items from "this week" (or implicitly this week)
+        if (!item.week || item.week === 'this') {
+          await deleteDoc(coll.name, item.id);
+        } 
+        // Promote items from "next week" to "this week"
+        else if (item.week === 'next') {
+          const { id, ...data } = item;
+          data.week = 'this';
+          await setDoc(coll.name, id, data);
+        }
+      }
+    }
+    res.json({ success: true, message: 'Weekly rollover complete' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ========================
 // DIOCESE API
 // ========================
 app.get('/api/diocese', async (req, res) => {
