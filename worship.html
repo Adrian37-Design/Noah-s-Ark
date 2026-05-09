@@ -207,8 +207,11 @@
           const scrThis = scrData.filter(a => !a.week || a.week === 'this');
           const scrNext = scrData.filter(a => a.week === 'next');
           
-          const offThis = offData.filter(a => !a.week || a.week === 'this');
-          const offNext = offData.filter(a => a.week === 'next');
+          const excludedRoles = ['rector', 'ordinand', 'ordnand', 'chairperson', 'deputy chairperson', 'deputy churchperson'];
+          const isWorshipRole = (o) => !excludedRoles.includes(o.role.toLowerCase().trim());
+          
+          const offThis = offData.filter(a => (!a.week || a.week === 'this') && isWorshipRole(a));
+          const offNext = offData.filter(a => a.week === 'next' && isWorshipRole(a));
 
           function buildTable(scr, off, title) {
             if (scr.length === 0 && off.length === 0) return '';
