@@ -677,16 +677,26 @@
       if (dir === -1 && idx === 0) return;
       if (dir === 1 && idx === list.length - 1) return;
 
+      // Ensure every item has a strict numerical order
+      list.forEach((item, i) => { item.order = i * 10; }); // Multiply by 10 to leave gaps if needed
+
+      // Swap the orders of the target elements
       const current = list[idx];
       const target = list[idx + dir];
       
-      const tempOrder = current.order !== undefined ? current.order : idx;
-      current.order = target.order !== undefined ? target.order : (idx + dir);
+      const tempOrder = current.order;
+      current.order = target.order;
       target.order = tempOrder;
 
       try {
-        await fetch(`/api/${ep}/add`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: currentPassword, item: current }) });
-        await fetch(`/api/${ep}/add`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: currentPassword, item: target }) });
+        // Save the updated list to ensure no items are left with 'undefined' order
+        await Promise.all(list.map(item => 
+          fetch(`/api/${ep}/add`, { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' }, 
+            body: JSON.stringify({ password: currentPassword, item: item }) 
+          })
+        ));
         await fetchAllData();
       } catch (e) { alert('Failed to move item'); }
     }
