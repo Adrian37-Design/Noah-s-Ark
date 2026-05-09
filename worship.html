@@ -193,6 +193,10 @@
 
     document.addEventListener('DOMContentLoaded', async () => {
       try {
+        const [rScr, rOff, rSrv] = await Promise.all([
+          fetch('/api/scriptures'), fetch('/api/officials'), fetch('/api/services')
+        ]);
+
         if (rScr.ok && rOff.ok && rSrv.ok) {
           const scrData = await rScr.json();
           const offData = await rOff.json();
