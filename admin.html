@@ -272,14 +272,24 @@
           <h2 id="off-form-title">Add Official</h2>
           <form id="off-form" onsubmit="saveOff(event)">
             <input type="hidden" id="off-id">
+            <div class="input-group">
+              <label>Week</label>
+              <select id="off-week">
+                <option value="this">This Week</option>
+                <option value="next">Next Week</option>
+              </select>
+            </div>
             <div class="input-group"><label>Name</label><input type="text" id="off-name" required></div>
             <div class="input-group"><label>Role / Position</label><input type="text" id="off-role" required></div>
             <div style="display:flex; gap:10px;"><button type="submit" class="btn" id="off-btn">Save</button><button type="button" class="btn btn-outline" id="off-cancel-btn" style="display:none;" onclick="document.getElementById('off-form').reset(); document.getElementById('off-id').value=''; document.getElementById('off-form-title').innerText='Add Official'; document.getElementById('off-btn').innerText='Save'; this.style.display='none';">Cancel</button></div>
           </form>
         </div>
         <div class="panel">
-          <h2>Today's Officials</h2>
-          <div class="event-list" id="off-list"><p style="color:gray;">Loading...</p></div>
+          <h2>Officials</h2>
+          <h3 style="margin-top: 1rem; color: var(--gold); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">This Week's Officials</h3>
+          <div class="event-list" id="off-list-this"><p style="color:gray;">Loading...</p></div>
+          <h3 style="margin-top: 2rem; color: var(--gold); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">Next Week's Officials</h3>
+          <div class="event-list" id="off-list-next"><p style="color:gray;">Loading...</p></div>
         </div>
       </div>
     </div>
@@ -706,25 +716,46 @@
 
     // OFFICIALS
     function renderOfficials(data) {
-      const list = document.getElementById('off-list'); list.innerHTML = '';
-      if (data.length === 0) return list.innerHTML = '<p style="color:gray;">No officials.</p>';
-      data.forEach(n => {
+      const listThis = document.getElementById('off-list-this');
+      const listNext = document.getElementById('off-list-next');
+      listThis.innerHTML = '';
+      listNext.innerHTML = '';
+
+      const thisWeekData = data.filter(n => !n.week || n.week === 'this');
+      const nextWeekData = data.filter(n => n.week === 'next');
+
+      if (thisWeekData.length === 0) listThis.innerHTML = '<p style="color:gray;">No officials.</p>';
+      if (nextWeekData.length === 0) listNext.innerHTML = '<p style="color:gray;">No officials.</p>';
+
+      const createItem = (n) => {
         const div = document.createElement('div'); div.className = 'event-item'; div.style.borderLeftColor = 'var(--crimson)';
         div.innerHTML = `<div class="event-info"><h4>${n.name}</h4><p>${n.role}</p></div>
         <div class="event-actions"><button class="btn-edit" onclick="editOff('${n.id}')"><i class="fas fa-edit"></i></button><button class="btn-delete" onclick="deleteGeneric('officials','${n.id}')"><i class="fas fa-trash-alt"></i></button></div>`;
-        list.appendChild(div);
-      });
+        return div;
+      };
+
+      thisWeekData.forEach(n => listThis.appendChild(createItem(n)));
+      nextWeekData.forEach(n => listNext.appendChild(createItem(n)));
     }
     async function saveOff(e) {
       e.preventDefault();
-      saveGeneric('officials', { id: document.getElementById('off-id').value || undefined, name: document.getElementById('off-name').value, role: document.getElementById('off-role').value }, () => {
+      saveGeneric('officials', { 
+        id: document.getElementById('off-id').value || undefined, 
+        week: document.getElementById('off-week').value,
+        name: document.getElementById('off-name').value, 
+        role: document.getElementById('off-role').value 
+      }, () => {
         document.getElementById('off-form').reset(); document.getElementById('off-id').value = '';
+        document.getElementById('off-week').value = 'this';
         document.getElementById('off-form-title').innerText = 'Add Official'; document.getElementById('off-btn').innerText = 'Save'; document.getElementById('off-cancel-btn').style.display='none';
       });
     }
     function editOff(id) {
       const n = globalOfficials.find(e => e.id === id); if(!n) return;
-      document.getElementById('off-id').value = n.id; document.getElementById('off-name').value = n.name; document.getElementById('off-role').value = n.role;
+      document.getElementById('off-id').value = n.id; 
+      document.getElementById('off-week').value = n.week || 'this';
+      document.getElementById('off-name').value = n.name; 
+      document.getElementById('off-role').value = n.role;
       document.getElementById('off-form-title').innerText = 'Edit Official'; document.getElementById('off-btn').innerText = 'Update'; document.getElementById('off-cancel-btn').style.display='block';
     }
 

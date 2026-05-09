@@ -144,17 +144,7 @@
 
         <!-- RIGHT: TODAY'S ROLES + VOLUNTEER -->
         <div class="reveal-right">
-          <div class="sec-head">
-            <span class="sec-label">Ministry</span>
-            <h2 class="sec-title">Today&rsquo;s Officials</h2>
-            <div class="sec-divider"></div>
-          </div>
-
-          <div class="card" style="border-top-color: var(--gold); margin-bottom: 1.5rem;">
-            <ul class="role-list" id="dyn-off">
-              <li style="color:gray; padding: 11px 0;">Loading officials...</li>
-            </ul>
-          </div>
+          <!-- The Officials list has been moved to the Scriptures table in the left column -->
 
           <div class="alert-box">
             <h4><i class="fas fa-hands-helping" style="margin-right:0.5rem;"></i> Join the Ministry</h4>
@@ -203,52 +193,69 @@
 
     document.addEventListener('DOMContentLoaded', async () => {
       try {
-        const [rScr, rOff, rSrv] = await Promise.all([
-          fetch('/api/scriptures'), fetch('/api/officials'), fetch('/api/services')
-        ]);
+        if (rScr.ok && rOff.ok && rSrv.ok) {
+          const scrData = await rScr.json();
+          const offData = await rOff.json();
+          const srvData = await rSrv.json();
 
-        if (rScr.ok) {
-          const arr = await rScr.json();
-          const thisWeek = arr.filter(a => !a.week || a.week === 'this');
-          const nextWeek = arr.filter(a => a.week === 'next');
+          let timeStr = srvData.length > 0 ? srvData[0].time : '9:00 AM';
+
+          const scrThis = scrData.filter(a => !a.week || a.week === 'this');
+          const scrNext = scrData.filter(a => a.week === 'next');
           
-          let html = '';
-          if (arr.length === 0) {
-            html = '<p style="color:var(--gray-light); padding:10px 0;">No scriptures available.</p>';
-          } else {
-            if (thisWeek.length > 0) {
-              html += '<h4 style="margin-top:0.5rem; margin-bottom:0.5rem; font-size:0.85rem; color:var(--gold); text-transform:uppercase; letter-spacing:0.05em;">This Week</h4>';
-              thisWeek.forEach((a, i) => html += `<div class="reading-row" ${i === thisWeek.length - 1 && nextWeek.length === 0 ? 'style="border-bottom:none;"' : ''}><div class="rr-badge">${a.badge || ''}</div><div class="rr-ref">${a.reference || ''}</div><div class="rr-reader">${a.reader || ''}</div></div>`);
-            }
-            if (nextWeek.length > 0) {
-              html += '<h4 style="margin-top:1.5rem; margin-bottom:0.5rem; font-size:0.85rem; color:var(--gold); text-transform:uppercase; letter-spacing:0.05em;">Next Week</h4>';
-              nextWeek.forEach((a, i) => html += `<div class="reading-row" ${i === nextWeek.length - 1 ? 'style="border-bottom:none;"' : ''}><div class="rr-badge">${a.badge || ''}</div><div class="rr-ref">${a.reference || ''}</div><div class="rr-reader">${a.reader || ''}</div></div>`);
-            }
+          const offThis = offData.filter(a => !a.week || a.week === 'this');
+          const offNext = offData.filter(a => a.week === 'next');
+
+          function buildTable(scr, off, title) {
+            if (scr.length === 0 && off.length === 0) return '';
+            
+            let html = `<h4 style="margin-top:2rem; margin-bottom:0.5rem; font-size:1rem; color:var(--gold); text-transform:uppercase; letter-spacing:0.05em; text-align:center;">${title}</h4>`;
+            html += `<table class="sched-table" style="margin-top:0.5rem; margin-bottom:2rem; border:1px solid var(--border);">`;
+            html += `<thead><tr><th style="width:50%; background:transparent; border-bottom:2px solid var(--border); color:var(--gold); font-size:1rem; text-transform:none; text-align:center;">Readings</th><th style="width:50%; background:transparent; border-bottom:2px solid var(--border); color:var(--gold); font-size:1rem; text-transform:none; text-align:left; border-left:1px solid var(--border);">${timeStr}</th></tr></thead>`;
+            html += `<tbody>`;
+            
+            // Render Scriptures
+            scr.forEach(s => {
+              if (!s.reader) {
+                // E.g. PSALM, GOSPEL
+                html += `<tr><td colspan="2" style="color:var(--gold); font-weight:600; text-transform:uppercase; padding:6px 16px;">${s.badge || ''}: ${s.reference || ''}</td></tr>`;
+              } else {
+                html += `<tr><td style="padding:6px 16px;">${s.badge ? s.badge + ': ' : ''}${s.reference || ''}</td><td style="padding:6px 16px; border-left:1px solid var(--border);">${s.reader}</td></tr>`;
+              }
+            });
+
+            // Render Officials
+            off.forEach(o => {
+              html += `<tr style="border-top:1px solid var(--border);"><td style="padding:6px 16px; font-weight:500;">${o.role}</td><td style="padding:6px 16px; border-left:1px solid var(--border);">${o.name}</td></tr>`;
+            });
+
+            html += `</tbody></table>`;
+            return html;
           }
-          document.getElementById('dyn-scr').innerHTML = html;
-        }
 
-        if (rOff.ok) {
-          const arr = await rOff.json();
-          let html = '';
-          arr.forEach(a => html += `<li><span class="role-name">${a.name}</span><span class="role-role">${a.role}</span></li>`);
-          if (arr.length === 0) html = '<li style="color:var(--gray-light);">No officials available.</li>';
-          document.getElementById('dyn-off').innerHTML = html;
-        }
+          let finalHtml = buildTable(scrThis, offThis, "This Week's Readings");
+          finalHtml += buildTable(scrNext, offNext, "Next Week's Readings");
 
-        if (rSrv.ok) {
-          const arr = await rSrv.json();
+          if (!finalHtml) finalHtml = '<p style="color:var(--gray-light); padding:10px 0;">No readings or officials available.</p>';
+          
+          document.getElementById('dyn-scr').innerHTML = finalHtml;
+          
+          // Clear the old dyn-off since it's now integrated
+          const dynOffEl = document.getElementById('dyn-off');
+          if (dynOffEl) {
+            dynOffEl.innerHTML = '<li style="color:var(--gray-light); font-style:italic;">Officials are now listed in the Readings table.</li>';
+          }
 
-          if (arr.length > 0) {
+          if (srvData.length > 0) {
             // Dynamically parse earliest service time for the countdown
-            const timeStr = arr[0].time;
-            const match = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
+            const timeStrServ = srvData[0].time;
+            const match = timeStrServ.match(/(\d+):(\d+)\s*(AM|PM)/i);
             if (match) {
-              let h = parseInt(match[1], 10);
-              const m = parseInt(match[2], 10);
-              const ampm = match[3].toUpperCase();
-              if (ampm === 'PM' && h !== 12) h += 12;
-              if (ampm === 'AM' && h === 12) h = 0;
+              let h = parseInt(match[1]);
+              const m = parseInt(match[2]);
+              const isPM = match[3].toUpperCase() === 'PM';
+              if (isPM && h !== 12) h += 12;
+              if (!isPM && h === 12) h = 0;
               targetH = h;
               targetM = m;
               updateCountdown(); // force refresh the digits
@@ -256,8 +263,8 @@
           }
 
           let html = '';
-          arr.forEach(a => html += `<tr><td>${a.time}</td><td>${a.name}</td></tr>`);
-          if (arr.length === 0) html = '<tr><td colspan="2" style="color:var(--gray-light);">No services scheduled.</td></tr>';
+          srvData.forEach(a => html += `<tr><td>${a.time}</td><td>${a.name}</td></tr>`);
+          if (srvData.length === 0) html = '<tr><td colspan="2" style="color:var(--gray-light);">No services scheduled.</td></tr>';
           document.getElementById('dyn-srv').innerHTML = html;
         }
       } catch (err) { console.error('Failed to load ministry data', err); }
