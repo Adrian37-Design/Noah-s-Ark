@@ -667,7 +667,11 @@
       } catch (err) { alert("Failed to delete."); }
     }
 
-    async function moveItemOrder(ep, list, id, dir) {
+    async function moveItemOrder(ep, weekVal, id, dir) {
+      let fullList = ep === 'scriptures' ? globalScriptures : globalOfficials;
+      let list = fullList.filter(e => (e.week === 'next' ? 'next' : 'this') === weekVal);
+      list.sort((a, b) => (a.order || 0) - (b.order || 0));
+
       const idx = list.findIndex(e => e.id === id);
       if (idx < 0) return;
       if (dir === -1 && idx === 0) return;
@@ -676,7 +680,7 @@
       const current = list[idx];
       const target = list[idx + dir];
       
-      const tempOrder = current.order || idx;
+      const tempOrder = current.order !== undefined ? current.order : idx;
       current.order = target.order !== undefined ? target.order : (idx + dir);
       target.order = tempOrder;
 
@@ -721,8 +725,9 @@
             displayHtml = `<td>${n.badge ? n.badge + ': ' : ''}${n.reference || ''}</td><td>${n.reader}</td>`;
           }
 
-          const upBtn = idx > 0 ? `<button class="btn-edit" onclick="moveItemOrder('scriptures', globalScriptures.filter(e => (!e.week || e.week==='this') === (!n.week || n.week==='this')).sort((a,b)=>(a.order||0)-(b.order||0)), '${n.id}', -1)" style="margin-right:2px;"><i class="fas fa-arrow-up"></i></button>` : `<button class="btn-edit" style="visibility:hidden; margin-right:2px;"><i class="fas fa-arrow-up"></i></button>`;
-          const downBtn = idx < list.length - 1 ? `<button class="btn-edit" onclick="moveItemOrder('scriptures', globalScriptures.filter(e => (!e.week || e.week==='this') === (!n.week || n.week==='this')).sort((a,b)=>(a.order||0)-(b.order||0)), '${n.id}', 1)" style="margin-right:2px;"><i class="fas fa-arrow-down"></i></button>` : `<button class="btn-edit" style="visibility:hidden; margin-right:2px;"><i class="fas fa-arrow-down"></i></button>`;
+          const weekVal = n.week === 'next' ? 'next' : 'this';
+          const upBtn = idx > 0 ? `<button class="btn-edit" onclick="moveItemOrder('scriptures', '${weekVal}', '${n.id}', -1)" style="margin-right:2px;"><i class="fas fa-arrow-up"></i></button>` : `<button class="btn-edit" style="visibility:hidden; margin-right:2px;"><i class="fas fa-arrow-up"></i></button>`;
+          const downBtn = idx < list.length - 1 ? `<button class="btn-edit" onclick="moveItemOrder('scriptures', '${weekVal}', '${n.id}', 1)" style="margin-right:2px;"><i class="fas fa-arrow-down"></i></button>` : `<button class="btn-edit" style="visibility:hidden; margin-right:2px;"><i class="fas fa-arrow-down"></i></button>`;
 
           tr.innerHTML = `${displayHtml}
           <td style="text-align:right; white-space:nowrap;">
@@ -791,8 +796,9 @@
           const tr = document.createElement('tr');
           const displayHtml = `<td>${n.role}</td><td>${n.name}</td>`;
 
-          const upBtn = idx > 0 ? `<button class="btn-edit" onclick="moveItemOrder('officials', globalOfficials.filter(e => (!e.week || e.week==='this') === (!n.week || n.week==='this')).sort((a,b)=>(a.order||0)-(b.order||0)), '${n.id}', -1)" style="margin-right:2px;"><i class="fas fa-arrow-up"></i></button>` : `<button class="btn-edit" style="visibility:hidden; margin-right:2px;"><i class="fas fa-arrow-up"></i></button>`;
-          const downBtn = idx < list.length - 1 ? `<button class="btn-edit" onclick="moveItemOrder('officials', globalOfficials.filter(e => (!e.week || e.week==='this') === (!n.week || n.week==='this')).sort((a,b)=>(a.order||0)-(b.order||0)), '${n.id}', 1)" style="margin-right:2px;"><i class="fas fa-arrow-down"></i></button>` : `<button class="btn-edit" style="visibility:hidden; margin-right:2px;"><i class="fas fa-arrow-down"></i></button>`;
+          const weekVal = n.week === 'next' ? 'next' : 'this';
+          const upBtn = idx > 0 ? `<button class="btn-edit" onclick="moveItemOrder('officials', '${weekVal}', '${n.id}', -1)" style="margin-right:2px;"><i class="fas fa-arrow-up"></i></button>` : `<button class="btn-edit" style="visibility:hidden; margin-right:2px;"><i class="fas fa-arrow-up"></i></button>`;
+          const downBtn = idx < list.length - 1 ? `<button class="btn-edit" onclick="moveItemOrder('officials', '${weekVal}', '${n.id}', 1)" style="margin-right:2px;"><i class="fas fa-arrow-down"></i></button>` : `<button class="btn-edit" style="visibility:hidden; margin-right:2px;"><i class="fas fa-arrow-down"></i></button>`;
 
           tr.innerHTML = `${displayHtml}
           <td style="text-align:right; white-space:nowrap;">
