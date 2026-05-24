@@ -8,7 +8,8 @@
   <link rel="icon" href="logo_new.png">
   <meta name="description"
     content="Explore the vision and architectural plans for our new church home. See the future sanctuary, site layout, and learn how to support our building fund.">
-  <meta name="keywords" content="Anglican Church Building Project, Noah's Ark Fairview, Church Architecture, Mount Pleasant, Zimbabwe">
+  <meta name="keywords"
+    content="Anglican Church Building Project, Noah's Ark Fairview, Church Architecture, Mount Pleasant, Zimbabwe">
   <meta property="og:title" content="Our Future Home | Noah's Ark Fairview">
   <meta property="og:description" content="Witness the architectural vision for our permanent sanctuary.">
   <meta property="og:image" content="Image2.jpeg">
@@ -23,7 +24,7 @@
 
   <style>
     /* PAGE-SPECIFIC CUSTOM PREMIUM STYLES */
-    
+
     /* Glowing Heading Style & Animation (Heartbeat Pulse) */
     .page-hero h1 {
       text-shadow: 0 0 12px rgba(196, 18, 48, 0.6);
@@ -35,18 +36,22 @@
         text-shadow: 0 0 8px rgba(196, 18, 48, 0.4);
         transform: scale(1);
       }
+
       14% {
         text-shadow: 0 0 24px rgba(196, 18, 48, 0.95), 0 0 40px rgba(196, 18, 48, 0.65);
         transform: scale(1.02);
       }
+
       28% {
         text-shadow: 0 0 8px rgba(196, 18, 48, 0.4);
         transform: scale(1);
       }
+
       42% {
         text-shadow: 0 0 24px rgba(196, 18, 48, 0.95), 0 0 40px rgba(196, 18, 48, 0.65);
         transform: scale(1.02);
       }
+
       70% {
         text-shadow: 0 0 8px rgba(196, 18, 48, 0.4);
         transform: scale(1);
@@ -118,12 +123,12 @@
       font-size: 1.3rem;
       color: var(--white);
       margin-bottom: 0.2rem;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     }
 
     .gallery-caption-text p {
       font-size: 0.85rem;
-      color: rgba(255,255,255,0.7);
+      color: rgba(255, 255, 255, 0.7);
       margin: 0;
     }
 
@@ -155,8 +160,13 @@
       box-shadow: var(--glow-gold-sm);
     }
 
-    .nav-btn-prev { left: 1rem; }
-    .nav-btn-next { right: 1rem; }
+    .nav-btn-prev {
+      left: 1rem;
+    }
+
+    .nav-btn-next {
+      right: 1rem;
+    }
 
     /* Thumbnails scrollbar */
     .thumbnails-grid {
@@ -223,7 +233,7 @@
       max-width: 100%;
       max-height: 75vh;
       border-radius: 12px;
-      box-shadow: 0 10px 50px rgba(0,0,0,0.8);
+      box-shadow: 0 10px 50px rgba(0, 0, 0, 0.8);
       object-fit: contain;
     }
 
@@ -242,14 +252,14 @@
 
     .lightbox-caption p {
       font-size: 0.95rem;
-      color: rgba(255,255,255,0.7);
+      color: rgba(255, 255, 255, 0.7);
     }
 
     .lightbox-close {
       position: absolute;
       top: -2.5rem;
       right: 0;
-      color: rgba(255,255,255,0.6);
+      color: rgba(255, 255, 255, 0.6);
       font-size: 1.8rem;
       cursor: pointer;
       transition: color 0.2s;
@@ -346,7 +356,7 @@
     .copy-btn {
       background: none;
       border: none;
-      color: rgba(255,255,255,0.4);
+      color: rgba(255, 255, 255, 0.4);
       cursor: pointer;
       font-size: 0.95rem;
       transition: color 0.2s;
@@ -356,7 +366,7 @@
 
     .copy-btn:hover {
       color: var(--gold-light);
-      background: rgba(255,255,255,0.05);
+      background: rgba(255, 255, 255, 0.05);
     }
 
     /* FEATURES GRID */
@@ -380,7 +390,7 @@
     .feature-item:hover {
       transform: translateX(5px);
       box-shadow: var(--shadow-hover);
-      border-color: rgba(196,18,48,0.25);
+      border-color: rgba(196, 18, 48, 0.25);
     }
 
     .feature-num {
@@ -422,7 +432,7 @@
   <!-- HERO -->
   <div class="page-hero">
     <h1 class="reveal">Our Future Home</h1>
-    <p class="reveal reveal-delay-1">Witness the vision of the permanent sanctuary we are building for St. Noah's Ark.</p>
+    <p class="reveal reveal-delay-1">Witness the vision of the permanent sanctuary we are building for Noah's Ark.</p>
   </div>
 
   <!-- MAIN CONTENT -->
@@ -430,7 +440,7 @@
 
     <!-- GALLERY SECTION -->
     <div class="project-container">
-      
+
       <!-- LEFT: VISUAL GALLERY -->
       <div class="reveal-left">
         <div class="sec-head">
@@ -443,17 +453,19 @@
           <!-- Main viewport -->
           <div class="main-view-container" onclick="openLightbox()">
             <img id="main-image" src="Image6.jpeg" alt="Main Sanctuary & Spire">
-            
+
             <div class="gallery-caption-overlay">
               <div class="gallery-caption-text">
                 <h3 id="image-title">Sanctuary & Spire</h3>
                 <p id="image-desc">A ground-level front view highlighting the architectural entrance and tall spire.</p>
               </div>
-              <span style="font-size: 0.75rem; color: rgba(255,255,255,0.5); font-weight:600;"><i class="fas fa-search-plus"></i> CLICK TO ZOOM</span>
+              <span style="font-size: 0.75rem; color: rgba(255,255,255,0.5); font-weight:600;"><i
+                  class="fas fa-search-plus"></i> CLICK TO ZOOM</span>
             </div>
 
             <!-- Nav Arrows -->
-            <button class="gallery-nav-btn nav-btn-prev" onclick="navigateGallery(-1, event)" aria-label="Previous image">
+            <button class="gallery-nav-btn nav-btn-prev" onclick="navigateGallery(-1, event)"
+              aria-label="Previous image">
               <i class="fas fa-chevron-left"></i>
             </button>
             <button class="gallery-nav-btn nav-btn-next" onclick="navigateGallery(1, event)" aria-label="Next image">
@@ -486,18 +498,22 @@
 
         <!-- VISION TEXT -->
         <div style="margin-top: 3rem; line-height: 1.8; color: var(--gray);">
-          <p style="font-size: 1.1rem; font-family: var(--font-quote); font-style: italic; color: var(--navy); margin-bottom: 1.5rem; border-left: 3px solid var(--gold); padding-left: 1.2rem;">
-            "We are not just erecting stone and mortar, but raising a spiritual home for generations to worship, grow, and serve the communities in Fairview, Haydon, Goodhope, Sandton, Marlborough, and Westgate."
+          <p
+            style="font-size: 1.1rem; font-family: var(--font-quote); font-style: italic; color: var(--navy); margin-bottom: 1.5rem; border-left: 3px solid var(--gold); padding-left: 1.2rem;">
+            "We are not just erecting stone and mortar, but raising a spiritual home for generations to worship, grow,
+            and serve the communities in Fairview, Haydon, Goodhope, Sandton, Marlborough, and Westgate."
           </p>
           <p>
-            The St. Noah's Ark building project represents our commitment to establishing a permanent sanctuary. Guided by our faith and the generosity of our congregation, these 3D designs depict a modern church facility optimized for robust worship services, youth education, and community fellowship.
+            The Noah's Ark building project represents our commitment to establishing a permanent sanctuary. Guided by
+            our faith and the generosity of our congregation, these 3D designs depict a modern church facility optimized
+            for robust worship services, youth education, and community fellowship.
           </p>
         </div>
       </div>
 
       <!-- RIGHT: FEATURES & BUILDING FUND -->
       <div class="reveal-right">
-        
+
         <!-- BUILDING FEATURES -->
         <div class="sec-head" style="margin-bottom: 2rem;">
           <span class="sec-label">The Project</span>
@@ -510,28 +526,32 @@
             <div class="feature-num">01</div>
             <div class="feature-text">
               <h4>Modern Sanctuary</h4>
-              <p>Designed with seating for 300+ congregants, featuring a tall arching spire, stained glass windows, and premium acoustics.</p>
+              <p>Designed with seating for 300+ congregants, featuring a tall arching spire, stained glass windows, and
+                premium acoustics.</p>
             </div>
           </div>
           <div class="feature-item">
             <div class="feature-num">02</div>
             <div class="feature-text">
               <h4>Secure Parking Facility</h4>
-              <p>Over 30 secure, paved parking spaces with integrated access roads to allow seamless traffic flow on Sundays.</p>
+              <p>Over 30 secure, paved parking spaces with integrated access roads to allow seamless traffic flow on
+                Sundays.</p>
             </div>
           </div>
           <div class="feature-item">
             <div class="feature-num">03</div>
             <div class="feature-text">
               <h4>Rector's Residence</h4>
-              <p>An on-premises rectory/clergy house built alongside the sanctuary to support our resident pastoral team.</p>
+              <p>An on-premises rectory/clergy house built alongside the sanctuary to support our resident pastoral
+                team.</p>
             </div>
           </div>
           <div class="feature-item">
             <div class="feature-num">04</div>
             <div class="feature-text">
               <h4>Lawn & Fellowship Garden</h4>
-              <p>A beautifully landscaped garden and courtyard situated behind the church, perfect for outdoor fellowship events.</p>
+              <p>A beautifully landscaped garden and courtyard situated behind the church, perfect for outdoor
+                fellowship events.</p>
             </div>
           </div>
           <div class="feature-item">
@@ -551,7 +571,8 @@
         </div>
 
         <p style="font-size: 0.9rem; color: var(--gray); line-height: 1.6; margin-bottom: 1.5rem;">
-          We invite you to prayerfully consider contributing toward the construction of our new church home. Bank transfer details for direct donations are listed below:
+          We invite you to prayerfully consider contributing toward the construction of our new church home. Bank
+          transfer details for direct donations are listed below:
         </p>
 
         <!-- CARD 1: ZWG -->
@@ -678,7 +699,7 @@
     function selectImage(index) {
       currentIndex = index;
       const item = galleryItems[currentIndex];
-      
+
       // Update DOM
       document.getElementById('main-image').src = item.src;
       document.getElementById('main-image').alt = item.title;
@@ -709,11 +730,11 @@
     function openLightbox() {
       const modal = document.getElementById('lightbox');
       const item = galleryItems[currentIndex];
-      
+
       document.getElementById('lightbox-image').src = item.src;
       document.getElementById('lightbox-title').textContent = item.title;
       document.getElementById('lightbox-desc').textContent = item.desc;
-      
+
       modal.classList.add('open');
       document.body.style.overflow = 'hidden'; // Lock background scrolling
     }
@@ -728,10 +749,10 @@
       let newIdx = currentIndex + direction;
       if (newIdx < 0) newIdx = galleryItems.length - 1;
       if (newIdx >= galleryItems.length) newIdx = 0;
-      
+
       // Switch image in background
       selectImage(newIdx);
-      
+
       // Update lightbox DOM
       const item = galleryItems[currentIndex];
       document.getElementById('lightbox-image').src = item.src;
