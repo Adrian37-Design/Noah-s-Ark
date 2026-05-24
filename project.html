@@ -24,24 +24,32 @@
   <style>
     /* PAGE-SPECIFIC CUSTOM PREMIUM STYLES */
     
-    /* Glowing Heading Style & Animation */
+    /* Glowing Heading Style & Animation (Heartbeat Pulse) */
     .page-hero h1 {
-      text-shadow: 0 0 15px rgba(255, 255, 255, 0.35), 
-                   0 0 30px rgba(196, 18, 48, 0.9), 
-                   0 0 50px rgba(196, 18, 48, 0.5);
-      animation: headingGlow 3s ease-in-out infinite alternate;
+      text-shadow: 0 0 12px rgba(196, 18, 48, 0.6);
+      animation: heartbeatGlow 2.5s infinite;
     }
 
-    @keyframes headingGlow {
-      from {
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.2), 
-                     0 0 20px rgba(196, 18, 48, 0.75), 
-                     0 0 35px rgba(196, 18, 48, 0.35);
+    @keyframes heartbeatGlow {
+      0% {
+        text-shadow: 0 0 8px rgba(196, 18, 48, 0.4);
+        transform: scale(1);
       }
-      to {
-        text-shadow: 0 0 20px rgba(255, 255, 255, 0.5), 
-                     0 0 38px rgba(196, 18, 48, 1), 
-                     0 0 60px rgba(196, 18, 48, 0.65);
+      14% {
+        text-shadow: 0 0 24px rgba(196, 18, 48, 0.95), 0 0 40px rgba(196, 18, 48, 0.65);
+        transform: scale(1.02);
+      }
+      28% {
+        text-shadow: 0 0 8px rgba(196, 18, 48, 0.4);
+        transform: scale(1);
+      }
+      42% {
+        text-shadow: 0 0 24px rgba(196, 18, 48, 0.95), 0 0 40px rgba(196, 18, 48, 0.65);
+        transform: scale(1.02);
+      }
+      70% {
+        text-shadow: 0 0 8px rgba(196, 18, 48, 0.4);
+        transform: scale(1);
       }
     }
 
@@ -576,8 +584,8 @@
         <!-- CARD 2: USD FCA -->
         <div class="bank-card" style="background: linear-gradient(135deg, var(--navy-dark) 0%, var(--blue) 100%);">
           <div class="bank-header">
-            <div class="bank-logo">BancABC</div>
-            <div class="bank-currency">USD FCA</div>
+            <div class="bank-logo">FCA</div>
+            <div class="bank-currency">USD</div>
           </div>
           <div class="bank-details">
             <div class="detail-item">
