@@ -21,6 +21,7 @@ function loadNavbar() {
         <li><a href="about.html"   id="nav-about">About</a></li>
         <li><a href="diocese.html" id="nav-diocese">Diocese</a></li>
         <li><a href="worship.html" id="nav-worship">Worship</a></li>
+        <li><a href="project.html" id="nav-project">Future Home</a></li>
         <li><a href="events.html"  id="nav-events">Events</a></li>
         <li><a href="location.html" id="nav-location">Find Us</a></li>
       </ul>
@@ -57,6 +58,7 @@ function loadFooter() {
           <ul>
             <li><a href="about.html">Our Story</a></li>
             <li><a href="diocese.html">Diocese Info</a></li>
+            <li><a href="project.html">Future Home</a></li>
             <li><a href="events.html">Events &amp; Notices</a></li>
           </ul>
         </div>
@@ -87,6 +89,7 @@ function setActiveNav() {
     'about.html':    'nav-about',
     'diocese.html':  'nav-diocese',
     'worship.html':  'nav-worship',
+    'project.html':  'nav-project',
     'events.html':   'nav-events',
     'location.html': 'nav-location',
   };
