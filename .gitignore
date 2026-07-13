@@ -12,3 +12,6 @@ Screenshot*.png
 # Firebase - NEVER commit these
 serviceAccountKey.json
 seed-firestore.js
+
+.vercel
+.env*.local
