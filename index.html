@@ -395,6 +395,62 @@
   </section>
 
   <!-- ═══════════════════════════════════════════════════════
+       8B. JERSEY DAY FEATURE BANNER
+  ═══════════════════════════════════════════════════════════ -->
+  <section class="jersey-feature" aria-labelledby="jersey-heading">
+    <div class="jersey-overlay">
+      <div class="jersey-content reveal">
+        <span class="sec-label" style="color:var(--gold);">Church Fair Highlights</span>
+        <h2 id="jersey-heading">Jersey Day Fundraising</h2>
+        <div class="sec-divider" style="margin:14px auto 20px;"></div>
+        <p>Our parish family came together in their team colours — united in faith, fun, and fellowship — raising support for the work of the church. One family, many jerseys.</p>
+        <a href="events.html" class="btn btn-gold" style="margin-top:1.5rem;"><i class="fas fa-calendar-alt"></i> See Upcoming Events</a>
+      </div>
+    </div>
+  </section>
+  <style>
+    .jersey-feature {
+      position: relative;
+      min-height: 520px;
+      background: url('jersey-day.jpg') center 35% / cover no-repeat;
+      background-attachment: fixed;
+      display: flex;
+      align-items: stretch;
+      padding: 0;
+    }
+    .jersey-overlay {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(to bottom, rgba(6,15,34,0.72) 0%, rgba(6,15,34,0.45) 45%, rgba(6,15,34,0.78) 100%);
+      padding: 110px 24px;
+    }
+    .jersey-content {
+      max-width: 640px;
+      text-align: center;
+      color: var(--white);
+    }
+    .jersey-content h2 {
+      font-family: var(--font-heading);
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      color: var(--white);
+      text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+      margin-top: 10px;
+    }
+    .jersey-content p {
+      font-size: clamp(1rem, 2vw, 1.15rem);
+      line-height: 1.8;
+      color: rgba(255,255,255,0.92);
+      text-shadow: 0 1px 12px rgba(0,0,0,0.6);
+    }
+    @media (max-width: 768px) {
+      .jersey-feature { background-attachment: scroll; min-height: 420px; }
+      .jersey-overlay { padding: 80px 20px; }
+    }
+  </style>
+
+  <!-- ═══════════════════════════════════════════════════════
        9. CALL TO ACTION BANNER
   ═══════════════════════════════════════════════════════════ -->
   <section class="cta-section dark-section" aria-labelledby="cta-heading">
