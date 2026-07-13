@@ -430,6 +430,8 @@
       filter: blur(18px) saturate(1.1) brightness(0.55);
       transform: scale(1.15);
       image-rendering: auto;
+      background-attachment: fixed;
+      animation: jerseyFloat 18s ease-in-out infinite alternate;
     }
     .jersey-photo {
       background-size: contain;
@@ -438,6 +440,18 @@
       image-rendering: -webkit-optimize-contrast;
       image-rendering: crisp-edges;
       box-shadow: inset 0 0 80px 30px rgba(6,15,34,0.85);
+      transition: transform 0.8s ease-out;
+    }
+    .jersey-feature:hover .jersey-photo {
+      transform: scale(1.03);
+    }
+    @keyframes jerseyFloat {
+      0% { transform: scale(1.12) translateY(0px); }
+      100% { transform: scale(1.20) translateY(-12px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .jersey-backdrop { animation: none; }
+      .jersey-photo { transition: none; }
     }
     .jersey-overlay {
       position: relative;
